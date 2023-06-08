@@ -401,8 +401,9 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Analysing data with Python and MNE</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#about-mne">About MNE</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#about-this-tutorial">About this tutorial</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#importing">Importing</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-paths">Creating paths</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-the-data">Loading the data</a></li>
 </ul>
 </li>
@@ -431,46 +432,165 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="analysing-data-with-python-and-mne">
 <h1>Analysing data with Python and MNE<a class="headerlink" href="#analysing-data-with-python-and-mne" title="Permalink to this heading">#</a></h1>
-<p>Sebo Uithol, PhD, June 2023. Thanks to Jeshua Tromp and David Vogelsang for their help setting up this Jupyter Notebook.</p>
-<p>Welcome to the practical session EEG data analysis! This practical session is part of the course Experimentation II at Leiden University. In this session we will study the EEG signals during an Eriksen Flankers Task. We will get acquainted with the basic preprocessing steps, the analysis of the data and the interpretation of the results.</p>
+<p><em>Sebo Uithol, PhD, June 2023. Thanks to Jeshua Tromp and David Vogelsang for their help setting up this Jupyter Notebook.</em></p>
+<p>Welcome to the practical session EEG data analysis using MNE! This practical session is part of the course Experimentation II at Leiden University. In this session we will study the EEG signals during an Eriksen Flankers Task. We will get acquainted with the basic preprocessing steps, the analysis of the data and the interpretation of the results.</p>
 <p>The data that we will be analysing was recorded at Leiden University, with the same equipment that we have used during the data acquisition practical.</p>
 <p>The data was acquired during an Eriksen flankers task. This is a conflict task that belongs to the same family of paradigms as the Stroop and Simon task. Participants are instructed to respond as fast as possible to the direction of the central stimulus in an array like this by pressing a response button with the corresponding index finger (in this case the right index finger) The experiment was a bit more complex than the standard Flankers task, but we will ignore this here.</p>
-<p><img alt="title" src="_images/flankers.jpg" /></p>
-<p>Flanking stimuli around the target are irrelevant, but can prime the correct response (congruent), or the opposite response (incongruent). Immediately after stimulus presentation, the attentional spotlight (the area of stimulus information that is selected for further processing) has not yet been narrowed, so the dominant information derives from the flankers, which may point at the wrong response. As the spotlight is narrowed, the support for the correct response increases. In the ERP you are likely to see initial signs of motor preparation for the hand indicated by the flankers (LRP) and signs of error detection processes (ERN). In addition, the ERP will show large components such as the P300. Prior to the P300, there is a weak negative component that is sensitive to the presence of conflict in the decision processes (N200). We will see to what extent these waves can be identified and quantified. Some of these ERP peaks will be analysed in the following.</p>
+<p>Flanking stimuli around the target are irrelevant, but can prime the correct response (congruent), or the opposite response (incongruent). Immediately after stimulus presentation, the attentional spotlight (the area of stimulus information that is selected for further processing) has not yet been narrowed, so the dominant information derives from the flankers, which may point at the wrong response. As the spotlight is narrowed, the support for the correct response increases. In the ERP you are likely to see initial signs of motor preparation for the hand indicated by the flankers (LRP) and signs of error detection processes (ERN). In addition, the ERP will show large components such as the P300. Prior to the P300, there is a weak negative component that is sensitive to the presence of conflict in the decision processes (N200). We will see to what extent these waves can be identified and quantified.</p>
+<section id="about-mne">
+<h2>About MNE<a class="headerlink" href="#about-mne" title="Permalink to this heading">#</a></h2>
+<p>MNE (MEG &amp; EEG) is a python toolbox. Both python and MNE are free, which makes it an analysis combination that is rapidly gaining ground. Installing and setting it up can be a bit more tricky, though, as there is a web of versions, libraries, dependencies, etc, that can change quickly.</p>
+</section>
+<section id="about-this-tutorial">
+<h2>About this tutorial<a class="headerlink" href="#about-this-tutorial" title="Permalink to this heading">#</a></h2>
+<p>This tutorial takes you through the absolute basic steps of EEG data analysis using MNE. MNE has an excellent website (<a class="reference external" href="https://mne.tools/stable/auto_tutorials/index.html">https://mne.tools/stable/auto_tutorials/index.html</a>) with all the commands explained, and also sample scripts showing how these commands can be put to use. I encourage you to look it up, and incorporate the commands you find there in the script below. At the bottom of this tutorial there is room to add your own commants.</p>
+</section>
 <section id="importing">
 <h2>Importing<a class="headerlink" href="#importing" title="Permalink to this heading">#</a></h2>
-<p>Now it is time to start our python script. Before we can start loading the data, we need to have the proper tools in place. Obviously we need to import MNE. Next we import matplotlib, for data visualisation, pandas for data analysis, and numpy for working with data structures. If you don’t like typing the same words over and over again, you can import libraries as a shorter name, for instance ‘pandas’ as ‘pd’. This saves time later on, but it is optional.</p>
+<p>Before we can start loading the data, we need to have the proper tools in place. Obviously we need to import MNE. Next we import matplotlib, for data visualisation, pandas for data analysis, and numpy for working with data structures. If you don’t like typing the same words over and over again, you can import libraries as a shorter name, for instance ‘pandas’ as ‘pd’. This saves time later on, but it is optional.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mne</span>
-<span class="kn">import</span> <span class="nn">matplotlib</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="o">%</span><span class="k">pip</span> install mne
+<span class="kn">import</span> <span class="nn">mne</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
-<span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">folders</span><span class="o">/</span><span class="n">ym</span><span class="o">/</span><span class="n">sgmmtl6j62gdmqhqjzgb95_00000gn</span><span class="o">/</span><span class="n">T</span><span class="o">/</span><span class="n">ipykernel_26552</span><span class="o">/</span><span class="mf">3397533586.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">import</span> <span class="nn">mne</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">import</span> <span class="nn">matplotlib</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
-<span class="ne">ModuleNotFoundError</span>: No module named &#39;mne&#39;
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting mne
 </pre></div>
 </div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Downloading mne-1.4.2-py3-none-any.whl (7.7 MB)
+?25l     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">0.0/7.7 MB</span> <span class=" -Color -Color-Red">?</span> eta <span class=" -Color -Color-Cyan">-:--:--</span>
+</pre></div>
 </div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ╸━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">0.1/7.7 MB</span> <span class=" -Color -Color-Red">3.8 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:02</span>
+     ━╸━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">0.3/7.7 MB</span> <span class=" -Color -Color-Red">4.1 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:02</span>
+</pre></div>
 </div>
-</section>
-<section id="creating-paths">
-<h2>Creating paths<a class="headerlink" href="#creating-paths" title="Permalink to this heading">#</a></h2>
-<p>Next we will set up the folders, so that python knows where to look for what. Type in the path corresponding to the location where you stored the data. To keep things need, we stored the eeg data file and the behavioural data file in two separate folders.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataPath</span> <span class="o">=</span> <span class="s1">&#39;/Users/sebouithol/surfdrive/Leiden/Teaching/Experimentation II/Data Analysis Practical/dataEEG/&#39;</span>
-<span class="n">dataPathBehav</span> <span class="o">=</span> <span class="s1">&#39;/Users/sebouithol/surfdrive/Leiden/Teaching/Experimentation II/Data Analysis Practical/dataBehavioural/&#39;</span>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ━━╸━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">0.5/7.7 MB</span> <span class=" -Color -Color-Red">4.4 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:02</span>
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ━━╸━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">0.5/7.7 MB</span> <span class=" -Color -Color-Red">4.4 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:02</span>
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ━━━╺━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">0.6/7.7 MB</span> <span class=" -Color -Color-Red">3.0 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:03</span>
+     ━━━━━━╺━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">1.2/7.7 MB</span> <span class=" -Color -Color-Red">5.0 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:02</span>
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ━━━━━━╸━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">1.3/7.7 MB</span> <span class=" -Color -Color-Red">4.8 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:02</span>
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ━━━━━━━╸━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">1.5/7.7 MB</span> <span class=" -Color -Color-Red">4.7 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:02</span>
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ━━━━━━━━╸━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">1.7/7.7 MB</span> <span class=" -Color -Color-Red">4.6 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:02</span>
+     ━━━━━━━━━╺━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">1.8/7.7 MB</span> <span class=" -Color -Color-Red">4.5 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:02</span>
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ━━━━━━━━━━╺━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">2.0/7.7 MB</span> <span class=" -Color -Color-Red">4.4 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:02</span>
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ━━━━━━━━━━╸━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">2.1/7.7 MB</span> <span class=" -Color -Color-Red">4.4 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:02</span>
+     ━━━━━━━━━━━╸━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">2.3/7.7 MB</span> <span class=" -Color -Color-Red">4.4 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:02</span>
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ━━━━━━━━━━━━━╺━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">2.5/7.7 MB</span> <span class=" -Color -Color-Red">4.5 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:02</span>
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ━━━━━━━━━━━━━━╸━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">2.9/7.7 MB</span> <span class=" -Color -Color-Red">4.7 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:02</span>
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ━━━━━━━━━━━━━━━━╺━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">3.1/7.7 MB</span> <span class=" -Color -Color-Red">4.9 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
+     ━━━━━━━━━━━━━━━━━╸━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">3.4/7.7 MB</span> <span class=" -Color -Color-Red">4.9 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ━━━━━━━━━━━━━━━━━━╸━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">3.6/7.7 MB</span> <span class=" -Color -Color-Red">5.0 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ━━━━━━━━━━━━━━━━━━━╸━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">3.8/7.7 MB</span> <span class=" -Color -Color-Red">5.0 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ━━━━━━━━━━━━━━━━━━━━━╺━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">4.1/7.7 MB</span> <span class=" -Color -Color-Red">5.1 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
+     ━━━━━━━━━━━━━━━━━━━━━━╸━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">4.3/7.7 MB</span> <span class=" -Color -Color-Red">5.1 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ━━━━━━━━━━━━━━━━━━━━━━━━╺━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">4.6/7.7 MB</span> <span class=" -Color -Color-Red">5.2 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ━━━━━━━━━━━━━━━━━━━━━━━━━╺━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">4.9/7.7 MB</span> <span class=" -Color -Color-Red">5.2 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ━━━━━━━━━━━━━━━━━━━━━━━━━━╸━━━━━━━━━━━━━ <span class=" -Color -Color-Green">5.1/7.7 MB</span> <span class=" -Color -Color-Red">5.3 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ━━━━━━━━━━━━━━━━━━━━━━━━━━━╸━━━━━━━━━━━━ <span class=" -Color -Color-Green">5.4/7.7 MB</span> <span class=" -Color -Color-Red">5.3 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╺━━━━━━━━━━ <span class=" -Color -Color-Green">5.6/7.7 MB</span> <span class=" -Color -Color-Red">5.3 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸━━━━━━━━━ <span class=" -Color -Color-Green">5.8/7.7 MB</span> <span class=" -Color -Color-Red">5.3 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╺━━━━━━━ <span class=" -Color -Color-Green">6.1/7.7 MB</span> <span class=" -Color -Color-Red">5.4 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸━━━━━━━ <span class=" -Color -Color-Green">6.3/7.7 MB</span> <span class=" -Color -Color-Red">5.4 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸━━━━━ <span class=" -Color -Color-Green">6.7/7.7 MB</span> <span class=" -Color -Color-Red">5.4 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╺━━━ <span class=" -Color -Color-Green">6.9/7.7 MB</span> <span class=" -Color -Color-Red">5.5 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╺━━ <span class=" -Color -Color-Green">7.1/7.7 MB</span> <span class=" -Color -Color-Red">5.5 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸━ <span class=" -Color -Color-Green">7.4/7.7 MB</span> <span class=" -Color -Color-Red">5.5 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸ <span class=" -Color -Color-Green">7.7/7.7 MB</span> <span class=" -Color -Color-Red">5.5 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸ <span class=" -Color -Color-Green">7.7/7.7 MB</span> <span class=" -Color -Color-Red">5.5 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">7.7/7.7 MB</span> <span class=" -Color -Color-Red">5.3 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:00</span>
+?25h
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: matplotlib&gt;=3.4.0 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from mne) (3.5.2)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting pooch&gt;=1.5
+  Using cached pooch-1.7.0-py3-none-any.whl (60 kB)
+Requirement already satisfied: numpy&gt;=1.15.4 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from mne) (1.21.5)
+Requirement already satisfied: jinja2 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from mne) (2.11.3)
+Requirement already satisfied: scipy&gt;=1.6.3 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from mne) (1.9.1)
+Requirement already satisfied: packaging in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from mne) (21.3)
+Requirement already satisfied: decorator in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from mne) (5.1.1)
+Requirement already satisfied: tqdm in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from mne) (4.64.1)
+Requirement already satisfied: cycler&gt;=0.10 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from matplotlib&gt;=3.4.0-&gt;mne) (0.11.0)
+Requirement already satisfied: kiwisolver&gt;=1.0.1 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from matplotlib&gt;=3.4.0-&gt;mne) (1.4.2)
+Requirement already satisfied: fonttools&gt;=4.22.0 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from matplotlib&gt;=3.4.0-&gt;mne) (4.25.0)
+Requirement already satisfied: pillow&gt;=6.2.0 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from matplotlib&gt;=3.4.0-&gt;mne) (9.2.0)
+Requirement already satisfied: python-dateutil&gt;=2.7 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from matplotlib&gt;=3.4.0-&gt;mne) (2.8.2)
+Requirement already satisfied: pyparsing&gt;=2.2.1 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from matplotlib&gt;=3.4.0-&gt;mne) (3.0.9)
+Requirement already satisfied: platformdirs&gt;=2.5.0 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from pooch&gt;=1.5-&gt;mne) (2.5.2)
+Requirement already satisfied: requests&gt;=2.19.0 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from pooch&gt;=1.5-&gt;mne) (2.28.1)
+Requirement already satisfied: MarkupSafe&gt;=0.23 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from jinja2-&gt;mne) (2.0.1)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: six&gt;=1.5 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from python-dateutil&gt;=2.7-&gt;matplotlib&gt;=3.4.0-&gt;mne) (1.16.0)
+Requirement already satisfied: certifi&gt;=2017.4.17 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from requests&gt;=2.19.0-&gt;pooch&gt;=1.5-&gt;mne) (2022.9.24)
+Requirement already satisfied: urllib3&lt;1.27,&gt;=1.21.1 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from requests&gt;=2.19.0-&gt;pooch&gt;=1.5-&gt;mne) (1.26.11)
+Requirement already satisfied: idna&lt;4,&gt;=2.5 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from requests&gt;=2.19.0-&gt;pooch&gt;=1.5-&gt;mne) (3.3)
+Requirement already satisfied: charset-normalizer&lt;3,&gt;=2 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from requests&gt;=2.19.0-&gt;pooch&gt;=1.5-&gt;mne) (2.0.4)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Installing collected packages: pooch, mne
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Successfully installed mne-1.4.2 pooch-1.7.0
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Note: you may need to restart the kernel to use updated packages.
 </pre></div>
 </div>
 </div>
@@ -478,31 +598,111 @@ document.write(`
 </section>
 <section id="loading-the-data">
 <h2>Loading the data<a class="headerlink" href="#loading-the-data" title="Permalink to this heading">#</a></h2>
-<p>Now we want to create an array with the content of the eeg data file. We do this using the command read_raw_bdf. This command is part of the MNE toolbox, and within MNE of the io (input-output)library, so the full command will read as: nameArray = mne.io.read_raw(“file name”)</p>
-<p>We need to specify the filename within the brackets. For this we also make use of the path that we created above.</p>
+<p>Now we want to create an array with the content of the eeg data file. We do this using the command read_raw_bdf. This command is part of the MNE toolbox, and within MNE of the io (input-output) library, so the full command will read as: nameArray = mne.io.read_raw(“file name”). We set preload to <em>True</em>, which means that the entire file (390MB will be loaded into the memory. This will result in faster processing, but requires more RAM. If your computer does not have much memory, you may want to set this to <em>False</em>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;Flanker_EEG_52_12052022.bdf&quot;</span>
-<span class="n">fullFileName</span> <span class="o">=</span> <span class="p">(</span><span class="n">dataPath</span> <span class="o">+</span> <span class="n">filename</span><span class="p">)</span>
 
-<span class="n">raw_eeg</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_bdf</span><span class="p">(</span><span class="n">fullFileName</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">raw_eeg</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_bdf</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Extracting EDF parameters from /Users/sebouithol/surfdrive/Leiden/Teaching/Experimentation II/Data Analysis Practical/dataEEG/Flanker_EEG_52_12052022.bdf...
-BDF file detected
-Setting channel info structure...
-Creating raw.info structure...
-Reading 0 ... 1778175  =      0.000 ...  3472.998 secs...
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Extracting EDF parameters from /Users/sebouithol/DataspellProjects/Experimentation2DataAnalysis/Experimentation2/Flanker_EEG_52_12052022.bdf...
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BDF file detected
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Setting channel info structure...
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Creating raw.info structure...
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Reading 0 ... 1778175  =      0.000 ...  3472.998 secs...
 </pre></div>
 </div>
 </div>
 </div>
-<p>We have managed to import the eeg data in python. At this point we may want to check what kind of data we have imported, so we use the command type:</p>
+<p>We have managed to import the eeg data in python. At this point we may want to check what kind of data we have imported, so we use the command <em>info</em>. Python is an object-oriented programming language, so we can use our variable name, raw_eeg, and add .info to it.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">raw_eeg</span><span class="o">.</span><span class="n">info</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><table class="table table-hover table-striped table-sm table-responsive small">
+    <tr>
+        <th>Measurement date</th>
+        
+        <td>May 12, 2022  14:32:28 GMT</td>
+        
+    </tr>
+    <tr>
+        <th>Experimenter</th>
+        
+        <td>Unknown</td>
+        
+    </tr>
+        <th>Participant</th>
+        
+        <td>Unknown</td>
+        
+    </tr>
+    <tr>
+        <th>Digitized points</th>
+        
+        <td>Not available</td>
+        
+    </tr>
+    <tr>
+        <th>Good channels</th>
+        <td>72 EEG, 1 Stimulus</td>
+    </tr>
+    <tr>
+        <th>Bad channels</th>
+        <td>None</td>
+    </tr>
+    <tr>
+        <th>EOG channels</th>
+        <td>Not available</td>
+    </tr>
+    <tr>
+        <th>ECG channels</th>
+        <td>Not available</td>
+    
+    <tr>
+        <th>Sampling frequency</th>
+        <td>512.00 Hz</td>
+    </tr>
+    
+    
+    <tr>
+        <th>Highpass</th>
+        <td>0.00 Hz</td>
+    </tr>
+    
+    
+    <tr>
+        <th>Lowpass</th>
+        <td>104.00 Hz</td>
+    </tr>
+    
+    
+</table></div></div>
+</div>
+<p>The info displayed above is what is stored in the header of the file. You can see, for instance, that 72 electrodes have been used (twice the number that we’ve used in the data acquisition practical); That the recording took almost an hour, and that the analogue signal was sampled with a 512Hz frequency.
+The data file itself is little more than the measured potential of a number of electrodes sampled at given frequency, stored as a very large 2-dimensional matrix. The size if the matrix is the number of channels for one dimension, and the sampling frequency timed the duration of the recording in seconds.</p>
+<p>To make sense of this matrix, we will also have to specify what the locations of each of the electrodes is. Luckily we do not have to do this by hand. MNE has dictionaries (or rather atlases) of standard systems. Ours is called <em>biosemi64</em>: BioSemi is the brand of the EEG setup; 64 denotes the number of channels. If we use this atlas, the location of each of the electrodes is provided. Additionally, we will specify that EXG1 through EXG6 are not used for recording the eeg signal, but were additional electrodes used for reference and tracking eye movements (eog channels). We will drop EXG7 and EXG8, as they were not used during the recording.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">biosemi_montage</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">make_standard_montage</span><span class="p">(</span><span class="s2">&quot;biosemi64&quot;</span><span class="p">)</span>
+<span class="n">raw_eeg</span><span class="o">.</span><span class="n">set_montage</span><span class="p">(</span><span class="n">biosemi_montage</span><span class="p">,</span> <span class="n">on_missing</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
+<span class="n">raw_eeg</span><span class="o">.</span><span class="n">set_channel_types</span><span class="p">(</span>
+    <span class="p">{</span><span class="s1">&#39;EXG1&#39;</span><span class="p">:</span> <span class="s1">&#39;eog&#39;</span><span class="p">,</span> <span class="s1">&#39;EXG2&#39;</span><span class="p">:</span> <span class="s1">&#39;eog&#39;</span><span class="p">,</span> <span class="s1">&#39;EXG3&#39;</span><span class="p">:</span> <span class="s1">&#39;eog&#39;</span><span class="p">,</span> <span class="s1">&#39;EXG4&#39;</span><span class="p">:</span> <span class="s1">&#39;eog&#39;</span><span class="p">,</span> <span class="s1">&#39;EXG5&#39;</span><span class="p">:</span> <span class="s1">&#39;eog&#39;</span><span class="p">,</span> <span class="s1">&#39;EXG6&#39;</span><span class="p">:</span> <span class="s1">&#39;eog&#39;</span><span class="p">})</span>
+<span class="n">raw_eeg</span><span class="o">.</span><span class="n">drop_channels</span><span class="p">([</span><span class="s1">&#39;EXG7&#39;</span><span class="p">,</span> <span class="s1">&#39;EXG8&#39;</span><span class="p">])</span>  <span class="c1"># Unused channels</span>
 </pre></div>
 </div>
 </div>
@@ -549,7 +749,7 @@ Reading 0 ... 1778175  =      0.000 ...  3472.998 secs...
     
     <tr>
         <th>Sampling frequency</th>
-        <td>250.00 Hz</td>
+        <td>512.00 Hz</td>
     </tr>
     
     
@@ -565,50 +765,19 @@ Reading 0 ... 1778175  =      0.000 ...  3472.998 secs...
     </tr>
     
     
+    
+    <tr>
+        <th>Filenames</th>
+        <td>Flanker_EEG_52_12052022.bdf</td>
+    </tr>
+    
+    <tr>
+        <th>Duration</th>
+        <td>00:57:53 (HH:MM:SS)</td>
+    </tr>
 </table></div></div>
 </div>
-<p>An EEG data file is little more than the measured potential of a number of electrodes sampled at given frequency, stored as a very large 2-dimensional matrix. The size if the matrix is the number of channels for one dimension, and the sampling frequency timed the duration of the recording in seconds.</p>
-<p>To make sense of this matrix, we will also have to specify what the locations of each of the electrodes is. Luckily we do not have to do this by hand. MNE has dictionaries (or rather atlases) of standard systems. Ours is called biosemi64. If we use this, the location of each of the electrodes is provided. Additionally, we will specify that EXG1 through EXG6 are used to track eye movements (eog channels). We will drop EXG7 and EXG8, as they were not used during the recording.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">biosemi_montage</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">make_standard_montage</span><span class="p">(</span><span class="s2">&quot;biosemi64&quot;</span><span class="p">)</span>
-<span class="n">raw_eeg</span><span class="o">.</span><span class="n">set_montage</span><span class="p">(</span><span class="n">biosemi_montage</span><span class="p">,</span> <span class="n">on_missing</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
-<span class="n">raw_eeg</span><span class="o">.</span><span class="n">set_channel_types</span><span class="p">(</span>
-    <span class="p">{</span><span class="s1">&#39;EXG1&#39;</span><span class="p">:</span> <span class="s1">&#39;eog&#39;</span><span class="p">,</span> <span class="s1">&#39;EXG2&#39;</span><span class="p">:</span> <span class="s1">&#39;eog&#39;</span><span class="p">,</span> <span class="s1">&#39;EXG3&#39;</span><span class="p">:</span> <span class="s1">&#39;eog&#39;</span><span class="p">,</span> <span class="s1">&#39;EXG4&#39;</span><span class="p">:</span> <span class="s1">&#39;eog&#39;</span><span class="p">,</span> <span class="s1">&#39;EXG5&#39;</span><span class="p">:</span> <span class="s1">&#39;eog&#39;</span><span class="p">,</span> <span class="s1">&#39;EXG6&#39;</span><span class="p">:</span> <span class="s1">&#39;eog&#39;</span><span class="p">})</span>
-<span class="n">raw_eeg</span><span class="o">.</span><span class="n">drop_channels</span><span class="p">([</span><span class="s1">&#39;EXG7&#39;</span><span class="p">,</span> <span class="s1">&#39;EXG8&#39;</span><span class="p">])</span>  <span class="c1"># Unused channels</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">ValueError</span><span class="g g-Whitespace">                                </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">47</span><span class="p">],</span> <span class="n">line</span> <span class="mi">5</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">raw_eeg</span><span class="o">.</span><span class="n">set_montage</span><span class="p">(</span><span class="n">biosemi_montage</span><span class="p">,</span> <span class="n">on_missing</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">raw_eeg</span><span class="o">.</span><span class="n">set_channel_types</span><span class="p">(</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span>     <span class="p">{</span><span class="s1">&#39;EXG1&#39;</span><span class="p">:</span> <span class="s1">&#39;eog&#39;</span><span class="p">,</span> <span class="s1">&#39;EXG2&#39;</span><span class="p">:</span> <span class="s1">&#39;eog&#39;</span><span class="p">,</span> <span class="s1">&#39;EXG3&#39;</span><span class="p">:</span> <span class="s1">&#39;eog&#39;</span><span class="p">,</span> <span class="s1">&#39;EXG4&#39;</span><span class="p">:</span> <span class="s1">&#39;eog&#39;</span><span class="p">,</span> <span class="s1">&#39;EXG5&#39;</span><span class="p">:</span> <span class="s1">&#39;eog&#39;</span><span class="p">,</span> <span class="s1">&#39;EXG6&#39;</span><span class="p">:</span> <span class="s1">&#39;eog&#39;</span><span class="p">})</span>
-<span class="ne">----&gt; </span><span class="mi">5</span> <span class="n">raw_eeg</span><span class="o">.</span><span class="n">drop_channels</span><span class="p">([</span><span class="s1">&#39;EXG7&#39;</span><span class="p">,</span> <span class="s1">&#39;EXG8&#39;</span><span class="p">])</span>
-
-<span class="nn">File ~/opt/anaconda3/envs/experimentationConda/lib/python3.8/site-packages/mne/channels/channels.py:783,</span> in <span class="ni">UpdateChannelsMixin.drop_channels</span><span class="nt">(self, ch_names, on_missing)</span>
-<span class="g g-Whitespace">    </span><span class="mi">781</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">missing</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">782</span>     <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Channel(s) </span><span class="si">{0}</span><span class="s2"> not found, nothing dropped.&quot;</span>
-<span class="ne">--&gt; </span><span class="mi">783</span>     <span class="n">_on_missing</span><span class="p">(</span><span class="n">on_missing</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">missing</span><span class="p">)))</span>
-<span class="g g-Whitespace">    </span><span class="mi">785</span> <span class="n">bad_idx</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ch_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">ch_names</span>
-<span class="g g-Whitespace">    </span><span class="mi">786</span>            <span class="k">if</span> <span class="n">ch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ch_names</span><span class="p">]</span>
-<span class="g g-Whitespace">    </span><span class="mi">787</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">setdiff1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ch_names</span><span class="p">)),</span> <span class="n">bad_idx</span><span class="p">)</span>
-
-<span class="nn">File ~/opt/anaconda3/envs/experimentationConda/lib/python3.8/site-packages/mne/utils/check.py:1040,</span> in <span class="ni">_on_missing</span><span class="nt">(on_missing, msg, name, error_klass)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1038</span> <span class="n">on_missing</span> <span class="o">=</span> <span class="s1">&#39;warn&#39;</span> <span class="k">if</span> <span class="n">on_missing</span> <span class="o">==</span> <span class="s1">&#39;warning&#39;</span> <span class="k">else</span> <span class="n">on_missing</span>
-<span class="g g-Whitespace">   </span><span class="mi">1039</span> <span class="k">if</span> <span class="n">on_missing</span> <span class="o">==</span> <span class="s1">&#39;raise&#39;</span><span class="p">:</span>
-<span class="ne">-&gt; </span><span class="mi">1040</span>     <span class="k">raise</span> <span class="n">error_klass</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1041</span> <span class="k">elif</span> <span class="n">on_missing</span> <span class="o">==</span> <span class="s1">&#39;warn&#39;</span><span class="p">:</span>
-<span class="g g-Whitespace">   </span><span class="mi">1042</span>     <span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-
-<span class="ne">ValueError</span>: Channel(s) EXG7, EXG8 not found, nothing dropped.
-</pre></div>
-</div>
-</div>
-</div>
-<p>If you want to check the location of the sensors, you can use the plot_sensors command. Which naming and location convention is displayed?</p>
+<p>If you want to check the location of the sensors, you can use the plot_sensors command. Do you recognise the naming and location convention?</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">raw_eeg</span><span class="o">.</span><span class="n">plot_sensors</span><span class="p">(</span><span class="n">show_names</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -617,8 +786,8 @@ Reading 0 ... 1778175  =      0.000 ...  3472.998 secs...
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/1800acf031ac66d76df61109154eeacac880483c43295577c59114e9b57fb6ab.png" src="_images/1800acf031ac66d76df61109154eeacac880483c43295577c59114e9b57fb6ab.png" />
-<img alt="_images/1800acf031ac66d76df61109154eeacac880483c43295577c59114e9b57fb6ab.png" src="_images/1800acf031ac66d76df61109154eeacac880483c43295577c59114e9b57fb6ab.png" />
+<img alt="_images/cba2400dc417d69d38ace5f350fc2140639b47630f24cf2f49b484fd8d2e4fe1.png" src="_images/cba2400dc417d69d38ace5f350fc2140639b47630f24cf2f49b484fd8d2e4fe1.png" />
+<img alt="_images/cba2400dc417d69d38ace5f350fc2140639b47630f24cf2f49b484fd8d2e4fe1.png" src="_images/cba2400dc417d69d38ace5f350fc2140639b47630f24cf2f49b484fd8d2e4fe1.png" />
 </div>
 </div>
 <p>We have loaded the data, and specified some of the characteristics. Now it is time to preprocess the data.</p>
@@ -629,7 +798,7 @@ Reading 0 ... 1778175  =      0.000 ...  3472.998 secs...
 <p>EEG preprocessing encompasses multiple steps. Generally, these steps are different in every experiment, as they are dependent on the research question, the recording setup, and the subsequent analysis steps. So there is no one-size-fits-all method. The steps below are common in many analysis pipelines.</p>
 <section id="downsampling">
 <h2>Downsampling<a class="headerlink" href="#downsampling" title="Permalink to this heading">#</a></h2>
-<p>In the output above we can find all kinds of characteristics of the data file. For instance, you can see that 72 electrodes have been used. That the recording took almost an hour, and that the analogue signal was sampled with a 512Hz frequency. For our purpose this is a bit too high, which will make files unnecessarily big, and computations slow. So we will <em>downsample</em> the data. This will be done using the resample command. We will have to specify the sfreq for this. You can add this in the code below. Use a value of 250. Note that we could have recorded this data with a sampling frequency of 250 from the start, which would have saved us the downsampling step. Yet, this latter option would have resulted in data of lesser quality. Do you understand why? Have a look at the command below. Do you understand the syntaxis? What is raw_eeg doing at both sides of the ‘=’ sign?</p>
+<p>In the output above we saw all that the signal was sampled with a 512Hz frequency. For our purpose this is a bit too high, which will make files unnecessarily big, and computations slow. So we will <em>downsample</em> the data. This will be done using the resample command. We will have to specify the sfreq for this. Note that we could have recorded this data with a sampling frequency of 250 from the start, which would have saved us the downsampling step. Yet, this latter option would have resulted in data of lesser quality. Do you understand why? Have a look at the command below. Do you understand the syntaxis? What is raw_eeg doing at both sides of the ‘=’ sign?</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">raw_eeg</span> <span class="o">=</span> <span class="n">raw_eeg</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">sfreq</span><span class="o">=</span><span class="mi">250</span><span class="p">)</span>
@@ -638,11 +807,59 @@ Reading 0 ... 1778175  =      0.000 ...  3472.998 secs...
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Trigger channel has a non-zero initial value of 65536 (consider using initial_event=True to detect this event)
-2823 events found
-Event IDs: [    4     8    16    33    34    35    36 65536 65789]
-Trigger channel has a non-zero initial value of 65536 (consider using initial_event=True to detect this event)
-2823 events found
-Event IDs: [    4     8    16    33    34    35    36 65536 65789]
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2823 events found
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Event IDs: [    4     8    16    33    34    35    36 65536 65789]
+</pre></div>
+</div>
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">KeyboardInterrupt</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
+<span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">folders</span><span class="o">/</span><span class="n">ym</span><span class="o">/</span><span class="n">sgmmtl6j62gdmqhqjzgb95_00000gn</span><span class="o">/</span><span class="n">T</span><span class="o">/</span><span class="n">ipykernel_56203</span><span class="o">/</span><span class="mf">689995176.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">raw_eeg</span> <span class="o">=</span> <span class="n">raw_eeg</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">sfreq</span><span class="o">=</span><span class="mi">250</span><span class="p">)</span>
+
+<span class="nn">&lt;decorator-gen-239&gt;</span> in <span class="ni">resample</span><span class="nt">(self, sfreq, npad, window, stim_picks, n_jobs, events, pad, verbose)</span>
+
+<span class="nn">~/opt/anaconda3/lib/python3.9/site-packages/mne/io/base.py</span> in <span class="ni">resample</span><span class="nt">(self, sfreq, npad, window, stim_picks, n_jobs, events, pad, verbose)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1360</span>             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preload</span><span class="p">:</span>
+<span class="g g-Whitespace">   </span><span class="mi">1361</span>                 <span class="n">data_chunk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[:,</span> <span class="n">offsets</span><span class="p">[</span><span class="n">ri</span><span class="p">]</span> <span class="p">:</span> <span class="n">offsets</span><span class="p">[</span><span class="n">ri</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]]</span>
+<span class="ne">-&gt; </span><span class="mi">1362</span>                 <span class="n">new_data</span><span class="p">[:,</span> <span class="n">this_sl</span><span class="p">]</span> <span class="o">=</span> <span class="n">resample</span><span class="p">(</span><span class="n">data_chunk</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1363</span>                 <span class="c1"># In empirical testing, it was faster to resample all channels</span>
+<span class="g g-Whitespace">   </span><span class="mi">1364</span>                 <span class="c1"># (above) and then replace the stim channels than it was to</span>
+
+<span class="nn">&lt;decorator-gen-154&gt;</span> in <span class="ni">resample</span><span class="nt">(x, up, down, npad, axis, window, n_jobs, pad, verbose)</span>
+
+<span class="nn">~/opt/anaconda3/lib/python3.9/site-packages/mne/filter.py</span> in <span class="ni">resample</span><span class="nt">(***failed resolving arguments***)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2027</span>         <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">x_flat</span><span class="p">),</span> <span class="n">new_len</span> <span class="o">-</span> <span class="n">to_removes</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2028</span>         <span class="k">for</span> <span class="n">xi</span><span class="p">,</span> <span class="n">x_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">x_flat</span><span class="p">):</span>
+<span class="ne">-&gt; </span><span class="mi">2029</span>             <span class="n">y</span><span class="p">[</span><span class="n">xi</span><span class="p">]</span> <span class="o">=</span> <span class="n">_fft_resample</span><span class="p">(</span><span class="n">x_</span><span class="p">,</span> <span class="n">new_len</span><span class="p">,</span> <span class="n">npads</span><span class="p">,</span> <span class="n">to_removes</span><span class="p">,</span> <span class="n">cuda_dict</span><span class="p">,</span> <span class="n">pad</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2030</span>     <span class="k">else</span><span class="p">:</span>
+<span class="g g-Whitespace">   </span><span class="mi">2031</span>         <span class="n">y</span> <span class="o">=</span> <span class="n">parallel</span><span class="p">(</span>
+
+<span class="nn">~/opt/anaconda3/lib/python3.9/site-packages/mne/cuda.py</span> in <span class="ni">_fft_resample</span><span class="nt">(x, new_len, npads, to_removes, cuda_dict, pad)</span>
+<span class="g g-Whitespace">    </span><span class="mi">352</span>     <span class="n">shorter</span> <span class="o">=</span> <span class="n">new_len</span> <span class="o">&lt;</span> <span class="n">old_len</span>
+<span class="g g-Whitespace">    </span><span class="mi">353</span>     <span class="n">use_len</span> <span class="o">=</span> <span class="n">new_len</span> <span class="k">if</span> <span class="n">shorter</span> <span class="k">else</span> <span class="n">old_len</span>
+<span class="ne">--&gt; </span><span class="mi">354</span>     <span class="n">x_fft</span> <span class="o">=</span> <span class="n">cuda_dict</span><span class="p">[</span><span class="s2">&quot;rfft&quot;</span><span class="p">](</span><span class="n">x</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">355</span>     <span class="k">if</span> <span class="n">use_len</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">356</span>         <span class="n">nyq</span> <span class="o">=</span> <span class="n">use_len</span> <span class="o">//</span> <span class="mi">2</span>
+
+<span class="nn">~/opt/anaconda3/lib/python3.9/site-packages/scipy/fft/_backend.py</span> in <span class="ni">__ua_function__</span><span class="nt">(method, args, kwargs)</span>
+<span class="g g-Whitespace">     </span><span class="mi">23</span>         <span class="k">if</span> <span class="n">fn</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+<span class="g g-Whitespace">     </span><span class="mi">24</span>             <span class="k">return</span> <span class="bp">NotImplemented</span>
+<span class="ne">---&gt; </span><span class="mi">25</span>         <span class="k">return</span> <span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">26</span> 
+<span class="g g-Whitespace">     </span><span class="mi">27</span> 
+
+<span class="nn">~/opt/anaconda3/lib/python3.9/site-packages/scipy/fft/_pocketfft/basic.py</span> in <span class="ni">r2c</span><span class="nt">(forward, x, n, axis, norm, overwrite_x, workers, plan)</span>
+<span class="g g-Whitespace">     </span><span class="mi">60</span> 
+<span class="g g-Whitespace">     </span><span class="mi">61</span>     <span class="c1"># Note: overwrite_x is not utilised</span>
+<span class="ne">---&gt; </span><span class="mi">62</span>     <span class="k">return</span> <span class="n">pfft</span><span class="o">.</span><span class="n">r2c</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="p">(</span><span class="n">axis</span><span class="p">,),</span> <span class="n">forward</span><span class="p">,</span> <span class="n">norm</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">workers</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">63</span> 
+<span class="g g-Whitespace">     </span><span class="mi">64</span> 
+
+<span class="ne">KeyboardInterrupt</span>: 
 </pre></div>
 </div>
 </div>
@@ -718,7 +935,7 @@ Event IDs: [    4     8    16    33    34    35    36 65536 65789]
 </section>
 <section id="rereferencing">
 <h2>Rereferencing<a class="headerlink" href="#rereferencing" title="Permalink to this heading">#</a></h2>
-<p>You may remember from the lecture that the potential that is recorded at each electrode is not an absolute value, but always a difference between that electrode and another electrode. You may also remember that during the acquisition we have used two electrodes named ‘drl’ and ‘cms’ as a reference during recording, and that we placed two electrodes on the mastoids in addition. Since drl and cms were close to the active electrodes, they are not ideal for analysing the data. The mastoids are further away from the active electrodes, and not near the brain, which will make them a far better reference. We will set the average of these two channels as explicit reference for all the other electrodes. Can you explain the procedure? Could we have placed cms and drl directly on the mastoids?</p>
+<p>You may remember from the lecture that the potential that is recorded at each electrode is not an absolute value, but always a difference between that electrode and another electrode. You may also remember that during the acquisition we have used two electrodes named ‘drl’ and ‘cms’ as a reference during recording, and that we placed two electrodes on the mastoids in addition. Since drl and cms were close to the active electrodes, they are not an ideal reference for analysing the data. The mastoids are further away from the active electrodes, and not near the brain, which will make them a superior reference. We will set the average of these two channels as explicit reference for all the other electrodes. Can you explain the procedure? Could we have placed cms and drl directly on the mastoids?</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">raw_eeg</span><span class="o">.</span><span class="n">set_eeg_reference</span><span class="p">(</span><span class="n">ref_channels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;EXG5&#39;</span><span class="p">,</span> <span class="s1">&#39;EXG6&#39;</span><span class="p">])</span>  <span class="c1"># Take average of mastoids as reference</span>
@@ -808,6 +1025,9 @@ Applying a custom (&#39;EEG&#39;,) reference.
 </div>
 </div>
 <div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Using matplotlib as 2D backend.
+</pre></div>
+</div>
 <img alt="_images/80b99351cc0ee36caab046052292bea8fb09429642e64f3af9dbf53bcf8160ec.png" src="_images/80b99351cc0ee36caab046052292bea8fb09429642e64f3af9dbf53bcf8160ec.png" />
 <img alt="_images/80b99351cc0ee36caab046052292bea8fb09429642e64f3af9dbf53bcf8160ec.png" src="_images/80b99351cc0ee36caab046052292bea8fb09429642e64f3af9dbf53bcf8160ec.png" />
 </div>
@@ -846,10 +1066,10 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
 [Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.0s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    0.1s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    0.0s remaining:    0.0s
 [Parallel(n_jobs=1)]: Done   3 out of   3 | elapsed:    0.1s remaining:    0.0s
 [Parallel(n_jobs=1)]: Done   4 out of   4 | elapsed:    0.1s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done  64 out of  64 | elapsed:    1.6s finished
+[Parallel(n_jobs=1)]: Done  64 out of  64 | elapsed:    1.3s finished
 </pre></div>
 </div>
 </div>
@@ -869,13 +1089,11 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 <p>This already looks a bit better, but we still need to remove the artifacts that originate from eye movements (blinks and saccades). We will do this using an <em>Independent Component Analysis</em>.</p>
 <section id="independent-component-anlysis">
 <h3>Independent Component Anlysis<a class="headerlink" href="#independent-component-anlysis" title="Permalink to this heading">#</a></h3>
-<p>To understand an Independent Component Analysis (ICA), think of a number of musicians playing in a room, while being recorded by multiple microphones. Each microphone picks up the sound of all the musical instruments, but, importantly, at different strengths. An ICA is a mathematical procedure to re-construct the sound of each individual instrument based on the signals of each of the microphones. The number of instruments that can thus be isolated is limited by the number of microphones.
+<p>To understand an Independent Component Analysis (ICA), think of a number of musicians playing in a room, while being recorded by multiple microphones. Each microphone picks up the sound of all the musical instruments, but, importantly, at different strengths. An ICA is a mathematical procedure to re-construct the sound of each individual instrument based on the signals of each of the microphones (test yourself: what problem does an ICA have to solve?). The number of instruments that can thus be isolated is limited by the number of microphones.
 Back to EEG data preprocessing: The raw signal is composed of proper brain activation as well as artifacts such as eye-blinks and saccades. What we want to do is identify components that can be related to occular artifacts, and then subtract these components from the raw signal. What would be left is a signal that does not include the contribution of these noise components. Here the number of components that can be estimated is limited by the number of electrodes. Since this data was recorded using 64 channels, we have ample components at our disposal.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mne.preprocessing</span> <span class="kn">import</span> <span class="n">ICA</span>
-
-
 <span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;picard&#39;</span>
 
 <span class="n">n_components</span> <span class="o">=</span> <span class="mi">20</span> <span class="c1"># select n_components by explained variance of PCA</span>
@@ -889,7 +1107,7 @@ Back to EEG data preprocessing: The raw signal is composed of proper brain activ
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Fitting ICA to data using 64 channels (please be patient, this may take a while)
 Selecting by number: 20 components
-Fitting ICA took 33.6s.
+Fitting ICA took 33.5s.
 </pre></div>
 </div>
 <div class="output text_html"><table class="table table-hover table-striped table-sm table-responsive small">
@@ -899,7 +1117,7 @@ Fitting ICA took 33.6s.
     </tr>
     <tr>
         <th>Fit</th>
-        <td>61 iterations on raw data (868250 samples)</td>
+        <td>60 iterations on raw data (868250 samples)</td>
     </tr>
     
     <tr>
@@ -940,11 +1158,11 @@ Ready.
 <img alt="_images/394907cdb722652259e2c50d3577032398ce565016fadb763215c7ad3ea308c3.png" src="_images/394907cdb722652259e2c50d3577032398ce565016fadb763215c7ad3ea308c3.png" />
 </div>
 </div>
-<p>For best results we look at both the components and the sources. Note that the sources graph does not display the electrodes, but the different components. The graph indicates how much of the (in our case filtered eeg signal) is explained by each component. What component correlates with eye blinks, you think? Why? What component could correlate to a bad sensor connection? We will remove it from the data.</p>
-<p>Fill in the components number in the brackets below. Mind that the first member in an array in python is referred to as 0 (unlike for instance MatLab, where the first member is 1)</p>
+<p>For best results we look at both the components and the sources. Note that the sources graph does not display the electrodes, but the different components. The graph indicates how much of the (in our case filtered eeg) signal is explained by each component. What component correlates with eye blinks, you think? Why? What component could correlate to a bad sensor connection? We will remove it from the data.</p>
+<p>Fill in the components number in the brackets below. Mind that the first member in an array in python is referred to as 0 (unlike for instance MatLab, where the first member is 1). Type in the components between the square brackets, separated by a comma</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ica</span><span class="o">.</span><span class="n">exclude</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">12</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ica</span><span class="o">.</span><span class="n">exclude</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">cleaned_eeg</span> <span class="o">=</span> <span class="n">ica</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">filtered_eeg</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -952,7 +1170,7 @@ Ready.
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Applying ICA to Raw instance
     Transforming to ICA space (20 components)
-    Zeroing out 2 ICA components
+    Zeroing out 4 ICA components
     Projecting back using 64 PCA components
 </pre></div>
 </div>
@@ -965,8 +1183,8 @@ Ready.
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/027602ffcc60b26486ddfeea8a644b3bb67daf58a25f9d48ed556ebcc04f4a20.png" src="_images/027602ffcc60b26486ddfeea8a644b3bb67daf58a25f9d48ed556ebcc04f4a20.png" />
-<img alt="_images/027602ffcc60b26486ddfeea8a644b3bb67daf58a25f9d48ed556ebcc04f4a20.png" src="_images/027602ffcc60b26486ddfeea8a644b3bb67daf58a25f9d48ed556ebcc04f4a20.png" />
+<img alt="_images/c17f36483fc26213af0a8e629868a8cdc29829db1d72741e1c9a0fcdad66e514.png" src="_images/c17f36483fc26213af0a8e629868a8cdc29829db1d72741e1c9a0fcdad66e514.png" />
+<img alt="_images/c17f36483fc26213af0a8e629868a8cdc29829db1d72741e1c9a0fcdad66e514.png" src="_images/c17f36483fc26213af0a8e629868a8cdc29829db1d72741e1c9a0fcdad66e514.png" />
 </div>
 </div>
 </section>
@@ -1003,13 +1221,13 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
 [Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.0s remaining:    0.0s
 [Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    0.0s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   3 out of   3 | elapsed:    0.1s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   3 out of   3 | elapsed:    0.0s remaining:    0.0s
 [Parallel(n_jobs=1)]: Done   4 out of   4 | elapsed:    0.1s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done  64 out of  64 | elapsed:    1.2s finished
+[Parallel(n_jobs=1)]: Done  64 out of  64 | elapsed:    1.1s finished
 </pre></div>
 </div>
-<img alt="_images/ad2f4d4f4b37d1fa500618d9deadbc91a738d9ede0d85585a0cfc7b97111a6ee.png" src="_images/ad2f4d4f4b37d1fa500618d9deadbc91a738d9ede0d85585a0cfc7b97111a6ee.png" />
-<img alt="_images/ad2f4d4f4b37d1fa500618d9deadbc91a738d9ede0d85585a0cfc7b97111a6ee.png" src="_images/ad2f4d4f4b37d1fa500618d9deadbc91a738d9ede0d85585a0cfc7b97111a6ee.png" />
+<img alt="_images/3c1f002358a74de0882a34fdc9136b6c4551f5fbe9a0df6004814eb0c31e36f4.png" src="_images/3c1f002358a74de0882a34fdc9136b6c4551f5fbe9a0df6004814eb0c31e36f4.png" />
+<img alt="_images/3c1f002358a74de0882a34fdc9136b6c4551f5fbe9a0df6004814eb0c31e36f4.png" src="_images/3c1f002358a74de0882a34fdc9136b6c4551f5fbe9a0df6004814eb0c31e36f4.png" />
 </div>
 </div>
 <p>This is starting to look like nice usable data! Now it is time to relate it to behavioural events</p>
@@ -1020,11 +1238,9 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fileNameBehav</span> <span class="o">=</span> <span class="s2">&quot;flankertask_eyetracker_52_202205121431_format.txt&quot;</span>
-<span class="n">fullFileNameBehav</span> <span class="o">=</span> <span class="n">dataPathBehav</span> <span class="o">+</span> <span class="n">fileNameBehav</span>
-
 
 <span class="c1"># Load in behavioral data and make numpy array of trialtype</span>
-<span class="n">trials</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">fullFileNameBehav</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+<span class="n">trials</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">fileNameBehav</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
 <span class="n">trials</span><span class="p">[</span><span class="s1">&#39;RT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># Replace &quot;none&quot; answers with &quot;nan&quot; for int processing</span>
 <span class="n">trials</span><span class="p">[</span><span class="s1">&#39;RT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="n">trials</span><span class="p">[</span><span class="s1">&#39;RT&#39;</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;coerce&#39;</span><span class="p">,</span> <span class="n">downcast</span><span class="o">=</span><span class="s1">&#39;integer&#39;</span><span class="p">)</span>
 
@@ -1066,7 +1282,7 @@ Event IDs: [  4   8  16  33  34  35  36 253]
 </div>
 </div>
 </div>
-<p>Now it is time to convert the continuous signal into chunks of data that are linked to one of the experimental conditions. We call these chunks <em>epochs</em>. We use the behavioural data that we have loaded above to define the epochs. We specify how much time before, and how much time after the event we want to include into our epoch.</p>
+<p>The behavioural data tells us what event occured at what time. We can use it to cut the continuous signal into chunks of data that are linked to one of the experimental condition. We call these chunks <em>epochs</em>. We use the behavioural data that we have loaded above to define the epochs. We specify how much time before, and how much time after the event we want to include into our epoch.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tmin</span><span class="o">=-</span><span class="mf">0.6</span>
@@ -1124,7 +1340,7 @@ Using data from preloaded Raw for 720 events and 326 original time points ...
 <img alt="_images/c1ef9581a48665d5d54b1bb3a64d0fdae3c5a6e8f3fa4271ef8d79fe80ab45f3.png" src="_images/c1ef9581a48665d5d54b1bb3a64d0fdae3c5a6e8f3fa4271ef8d79fe80ab45f3.png" />
 </div>
 </div>
-<p>Look at the plots carefully. What is shown is the ERP for every electrode overlayed on top of each other. Two observations may need explication. 1) The ERP is visible in every electrode. This is inherent to EEG data and its poor spatial resolutions. If we want to do source localisation we will have to use the difference between the ERP peaks and troughs of the various electrodes. You can see that during the positive peak at around 200ms, the spread over the scalp is quite good, with the greenish tints (frontal electrodes) are more positive thah the blue/purpel electrodes. 2) The ERP components are much larger than the noise before 0s. This means that our recording and preprocessing step was succesfull and that the signal-to-noise ration is likely to be good enough to do analyses.</p>
+<p>Look at the plots carefully. What is shown is the ERP for every electrode overlayed on top of each other. Two observations may need explication. 1) The ERP is visible in every electrode. This is inherent to EEG data and its poor spatial resolution. If we want to do source localisation we will have to use the difference between the ERP peaks and troughs of the various electrodes. You can see that during the positive peak at around 200ms, the spread over the scalp is quite good, with the greenish tints (frontal electrodes) are more positive thah the blue/purpel electrodes (what does that mean?). 2) The ERP components are much larger than the noise before 0s. This means that our recording and preprocessing step was succesfull and that the signal-to-noise ration is likely to be good enough to do analyses.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">evokeds</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">congruentAlert</span><span class="o">=</span><span class="n">congAl</span><span class="p">,</span> <span class="n">incongruentAlert</span><span class="o">=</span><span class="n">incongAl</span><span class="p">,</span> <span class="n">congruentNoAlert</span><span class="o">=</span><span class="n">congNoAl</span><span class="p">,</span> <span class="n">incongruentNoAlert</span><span class="o">=</span><span class="n">incongNoAl</span><span class="p">)</span>
@@ -1151,16 +1367,18 @@ combining channels using &quot;mean&quot;
 </div>
 </div>
 <p>We can see that the difference between alert and no alert conditions is big at around 300ms before stimulus onset, but virtually absent in the peaks +400ms. In this peak we can see a difference between the congruent and incongruent conditions, irrespective of the alert.</p>
+<p>The Tutorial ends here. If you want you can play with the settings of the commands above, or add new commands below. I started a time-frequency analysis below, but it is not yet the way I want it to be. You can play with it and see what it does. Alternatively, you can add your own commands that you looked up at the MNE website.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">raw</span><span class="o">.</span><span class="n">plot_sensors</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">,</span> <span class="n">ch_type</span><span class="o">=</span><span class="s1">&#39;eeg&#39;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">raw_eeg</span><span class="o">.</span><span class="n">compute_psd</span><span class="p">(</span><span class="n">fmax</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span>
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Effective window size : 1.024 (s)
+</pre></div>
 </div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">raweeg</span><span class="o">.</span><span class="n">compute_psd</span><span class="p">(</span><span class="n">fmax</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;bound method BaseSpectrum.plot of &lt;Power Spectrum (from Raw, welch method) | 64 channels × 52 freqs, 0.0-49.8 Hz&gt;&gt;
 </pre></div>
 </div>
 </div>
@@ -1179,7 +1397,7 @@ combining channels using &quot;mean&quot;
   (fig or plt).show(**kwargs)
 </pre></div>
 </div>
-<img alt="_images/851fbe6d0b3bd5de4bb90aa9bda1b51ff9ad2c570185e65e35e7a859f2c4843f.png" src="_images/851fbe6d0b3bd5de4bb90aa9bda1b51ff9ad2c570185e65e35e7a859f2c4843f.png" />
+<img alt="_images/0c0bba5270d87e3f5d6fe788dfc619e79349516dc9be6b8c4cc7ea646409c63d.png" src="_images/0c0bba5270d87e3f5d6fe788dfc619e79349516dc9be6b8c4cc7ea646409c63d.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1187,6 +1405,16 @@ combining channels using &quot;mean&quot;
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">frequencies</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 <span class="n">power</span><span class="p">,</span> <span class="n">itc</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">time_frequency</span><span class="o">.</span><span class="n">tfr_morlet</span><span class="p">(</span><span class="n">epochs</span><span class="p">,</span> <span class="n">n_cycles</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">return_itc</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                                            <span class="n">freqs</span><span class="o">=</span><span class="n">frequencies</span><span class="p">,</span> <span class="n">decim</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.3s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    0.6s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   3 out of   3 | elapsed:    0.9s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   4 out of   4 | elapsed:    1.2s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done  64 out of  64 | elapsed:   19.2s finished
 </pre></div>
 </div>
 </div>
@@ -1205,70 +1433,71 @@ combining channels using &quot;mean&quot;
   figs = [plt.figure() for i in range(n_picks)]
 </pre></div>
 </div>
-<img alt="_images/5e1bdfbb03905d3fe97693354e147570c75a1589b670378f5208a4bb8cbd0475.png" src="_images/5e1bdfbb03905d3fe97693354e147570c75a1589b670378f5208a4bb8cbd0475.png" />
-<img alt="_images/db1ee68cb61cc2604448cc574b6834b9bf16f805df2d3501e9171113141826ba.png" src="_images/db1ee68cb61cc2604448cc574b6834b9bf16f805df2d3501e9171113141826ba.png" />
-<img alt="_images/09e1c89ae5e5d1345f6445c62333bfe515393d54da30f698b71440752ca63758.png" src="_images/09e1c89ae5e5d1345f6445c62333bfe515393d54da30f698b71440752ca63758.png" />
-<img alt="_images/56acaee08e728cd1eff86926cb4dab4dee091258a10848d8fa3eb241dab12b45.png" src="_images/56acaee08e728cd1eff86926cb4dab4dee091258a10848d8fa3eb241dab12b45.png" />
-<img alt="_images/eef7d4c76e164078f91dea28302803ae905fef6be71ad0fe3c90efbb6c75678a.png" src="_images/eef7d4c76e164078f91dea28302803ae905fef6be71ad0fe3c90efbb6c75678a.png" />
-<img alt="_images/46f081984e27f2b6e1e5aac9ec8bb7dff5315b9b6dc45921946e69bb7fd9c6cd.png" src="_images/46f081984e27f2b6e1e5aac9ec8bb7dff5315b9b6dc45921946e69bb7fd9c6cd.png" />
-<img alt="_images/b4db1353d22773136ecde723c099f7f1c0acceb529342fc58dff354f32d09ecf.png" src="_images/b4db1353d22773136ecde723c099f7f1c0acceb529342fc58dff354f32d09ecf.png" />
-<img alt="_images/28368b6082d52ac5881e8f1b499c14fc5cee3c6c69df72ef4de339f6ad675292.png" src="_images/28368b6082d52ac5881e8f1b499c14fc5cee3c6c69df72ef4de339f6ad675292.png" />
-<img alt="_images/9279d014e8698d4aab81792c54bb56cbb63a11bafacf8a50549f9d93e9f0a6d5.png" src="_images/9279d014e8698d4aab81792c54bb56cbb63a11bafacf8a50549f9d93e9f0a6d5.png" />
-<img alt="_images/9a35a9af4ab1c5ddaa05ac3e40953669554cbac93da4083f07e7936e19296595.png" src="_images/9a35a9af4ab1c5ddaa05ac3e40953669554cbac93da4083f07e7936e19296595.png" />
-<img alt="_images/6b2f1df0bfb8d653e9f29812c6e98a7a29b9fd5c192cf5423347a463e9b4a3f5.png" src="_images/6b2f1df0bfb8d653e9f29812c6e98a7a29b9fd5c192cf5423347a463e9b4a3f5.png" />
-<img alt="_images/d65cadaf5719d3eebd6c9e2b225136aabaff10a2861adb8e649e2a1fc64f2455.png" src="_images/d65cadaf5719d3eebd6c9e2b225136aabaff10a2861adb8e649e2a1fc64f2455.png" />
-<img alt="_images/e3ab8ed3fdc8cd844d14b8569ebfe951848332027709414ea4e7a7d54a9786b5.png" src="_images/e3ab8ed3fdc8cd844d14b8569ebfe951848332027709414ea4e7a7d54a9786b5.png" />
-<img alt="_images/5e6ea70ab9d16677a00fb7c4e24bd54f91c22eaae057185d557ba480c55571e5.png" src="_images/5e6ea70ab9d16677a00fb7c4e24bd54f91c22eaae057185d557ba480c55571e5.png" />
-<img alt="_images/c5ed50d899d45314f95a437765149b7153dbe1b2ff5fac526408fea215a4368e.png" src="_images/c5ed50d899d45314f95a437765149b7153dbe1b2ff5fac526408fea215a4368e.png" />
-<img alt="_images/c4d798e78e730f517b7b71204c1f86619f6681d594a45758057327e3197fb5c9.png" src="_images/c4d798e78e730f517b7b71204c1f86619f6681d594a45758057327e3197fb5c9.png" />
-<img alt="_images/277d7bbab195c6478a913fbd2c27553fdd9e12e7c7a3291a296e8f944d73e41b.png" src="_images/277d7bbab195c6478a913fbd2c27553fdd9e12e7c7a3291a296e8f944d73e41b.png" />
-<img alt="_images/7df0c5f4473fa4a2679150c3c6560c0db8ae13ae1176336260ae6053378ffc18.png" src="_images/7df0c5f4473fa4a2679150c3c6560c0db8ae13ae1176336260ae6053378ffc18.png" />
-<img alt="_images/d5cbf71f5037eea7a069d74b5d200ea3a4a6d22d9ecafb238e7f7e08267aafec.png" src="_images/d5cbf71f5037eea7a069d74b5d200ea3a4a6d22d9ecafb238e7f7e08267aafec.png" />
-<img alt="_images/e9827723294207ac831a813d5fc23aae9d6d19b41eb58a5fbdb735a670987a69.png" src="_images/e9827723294207ac831a813d5fc23aae9d6d19b41eb58a5fbdb735a670987a69.png" />
-<img alt="_images/e1693c607a8c3d773f81e9a3df31743e89d7e7fa270d68c214fb2709d329c31a.png" src="_images/e1693c607a8c3d773f81e9a3df31743e89d7e7fa270d68c214fb2709d329c31a.png" />
-<img alt="_images/8e3186f789637f9111648a2496737f441b1335e4ffbf0aac1677df370fd0a810.png" src="_images/8e3186f789637f9111648a2496737f441b1335e4ffbf0aac1677df370fd0a810.png" />
-<img alt="_images/417188c01e84b7f7a18da44cc8aacb8d7356fdcbfe845de7c58545cda8cea234.png" src="_images/417188c01e84b7f7a18da44cc8aacb8d7356fdcbfe845de7c58545cda8cea234.png" />
-<img alt="_images/a410f1f12f26cc339a64f2eb1626b3d79d578f06335b4493e9b3ae0067080b13.png" src="_images/a410f1f12f26cc339a64f2eb1626b3d79d578f06335b4493e9b3ae0067080b13.png" />
-<img alt="_images/a734110b1eac8f0fc4b2b62cc9a6fcd9602345c0194915f544861eefe9bd2e60.png" src="_images/a734110b1eac8f0fc4b2b62cc9a6fcd9602345c0194915f544861eefe9bd2e60.png" />
-<img alt="_images/4d0be39db5410a7013ef40928e2413214212c267c1bbe7c97dc44d2860e064d4.png" src="_images/4d0be39db5410a7013ef40928e2413214212c267c1bbe7c97dc44d2860e064d4.png" />
-<img alt="_images/59f2c837fd249ed72b2d87f252d8b35dcba82b2da0736e9775b29c880cce953e.png" src="_images/59f2c837fd249ed72b2d87f252d8b35dcba82b2da0736e9775b29c880cce953e.png" />
-<img alt="_images/d175bfc6ee6ca730b89dab5f77d4c82e48a86a18cc1773510f7af686fa005dc2.png" src="_images/d175bfc6ee6ca730b89dab5f77d4c82e48a86a18cc1773510f7af686fa005dc2.png" />
-<img alt="_images/a02ee0e8fac2e4cccf3366044f181c1b608e304103387436ee01dee7c6def207.png" src="_images/a02ee0e8fac2e4cccf3366044f181c1b608e304103387436ee01dee7c6def207.png" />
-<img alt="_images/ee1bd2116f06a6b32df74551a171cc804edbba091ff6078c92746412034c4e52.png" src="_images/ee1bd2116f06a6b32df74551a171cc804edbba091ff6078c92746412034c4e52.png" />
-<img alt="_images/380e2bd68b2f4924b6070d761b8a99723b0ebe91c0e47a4496db70f1bd2fb675.png" src="_images/380e2bd68b2f4924b6070d761b8a99723b0ebe91c0e47a4496db70f1bd2fb675.png" />
-<img alt="_images/fef4ebb33ef3733bc018f3ad463faa148cbdf79c596bfcc639f2e7789e6b5b00.png" src="_images/fef4ebb33ef3733bc018f3ad463faa148cbdf79c596bfcc639f2e7789e6b5b00.png" />
-<img alt="_images/6c77694b5c1392614be5fcb44161e048c7fe67903a982ca9171b27cd9f703d14.png" src="_images/6c77694b5c1392614be5fcb44161e048c7fe67903a982ca9171b27cd9f703d14.png" />
-<img alt="_images/ee5edb2d67ba8b32218f020e9f650cb99c2ddaed0d00d224832d004e3d9f502e.png" src="_images/ee5edb2d67ba8b32218f020e9f650cb99c2ddaed0d00d224832d004e3d9f502e.png" />
-<img alt="_images/ee5fa3c0d8585ce6d4e7ee33bdeb47750bd528eed473b6a025f33db2ec14adc0.png" src="_images/ee5fa3c0d8585ce6d4e7ee33bdeb47750bd528eed473b6a025f33db2ec14adc0.png" />
-<img alt="_images/5c6b91a17f1894e6c8990622ffa40e2ba46bf461bd53efbac01248413308d74c.png" src="_images/5c6b91a17f1894e6c8990622ffa40e2ba46bf461bd53efbac01248413308d74c.png" />
-<img alt="_images/0ce7915d26ff63602b4dc4c05fc6b0bc2c8b86a05741240b2142e8911474e2cc.png" src="_images/0ce7915d26ff63602b4dc4c05fc6b0bc2c8b86a05741240b2142e8911474e2cc.png" />
-<img alt="_images/dc9395eee7338bf609295dbd953ad27a6b3c809c6e49ec1aff4a1f2fb0688403.png" src="_images/dc9395eee7338bf609295dbd953ad27a6b3c809c6e49ec1aff4a1f2fb0688403.png" />
-<img alt="_images/ad8d615e0b2c3e8ca7159271781792a7859fbe56841783c25ce0dcc5779e5728.png" src="_images/ad8d615e0b2c3e8ca7159271781792a7859fbe56841783c25ce0dcc5779e5728.png" />
-<img alt="_images/4928a45b4638bc8e37d4c6fa3b34d9e17e4144b2b1332a116120d104d5c76b52.png" src="_images/4928a45b4638bc8e37d4c6fa3b34d9e17e4144b2b1332a116120d104d5c76b52.png" />
-<img alt="_images/90b292c19ed711b0a2b13b6556c06c483a375cd99c04c1b65467c586b98982b6.png" src="_images/90b292c19ed711b0a2b13b6556c06c483a375cd99c04c1b65467c586b98982b6.png" />
-<img alt="_images/362c52806054965df92037eddac768348fdb0bbb943458e588f61902c458b353.png" src="_images/362c52806054965df92037eddac768348fdb0bbb943458e588f61902c458b353.png" />
-<img alt="_images/9461a402b795aeb6e2ce12bd1ee77f798a27bbb170b3efaa89a5e09f845d1d75.png" src="_images/9461a402b795aeb6e2ce12bd1ee77f798a27bbb170b3efaa89a5e09f845d1d75.png" />
-<img alt="_images/f4ee4f6dda13f691d8fff39046b83d3874237dcf0d74c85e4061ac62c5269e09.png" src="_images/f4ee4f6dda13f691d8fff39046b83d3874237dcf0d74c85e4061ac62c5269e09.png" />
-<img alt="_images/c03a90983c068d50d52f5fd87fc3f6313f674bab2eda508d5d9f7875998c0fc1.png" src="_images/c03a90983c068d50d52f5fd87fc3f6313f674bab2eda508d5d9f7875998c0fc1.png" />
-<img alt="_images/6f6846123243ccecbf853880853e054567a8704c26f73fabe6ad68c3cdca0155.png" src="_images/6f6846123243ccecbf853880853e054567a8704c26f73fabe6ad68c3cdca0155.png" />
-<img alt="_images/fe6d2eb6a05bccd2521a65f89fa2e845094fbc167b1475431544461ec83922ce.png" src="_images/fe6d2eb6a05bccd2521a65f89fa2e845094fbc167b1475431544461ec83922ce.png" />
-<img alt="_images/219cbd0ed6c4c2202131856f0bdaa76215d876bb1d9604b2a337c1188001b3e3.png" src="_images/219cbd0ed6c4c2202131856f0bdaa76215d876bb1d9604b2a337c1188001b3e3.png" />
-<img alt="_images/26f06309758dec4470bdf5edd7585034ec38adbbff44d796298fe63227315b75.png" src="_images/26f06309758dec4470bdf5edd7585034ec38adbbff44d796298fe63227315b75.png" />
-<img alt="_images/3531b71d734283aa1b8fe1292b44d4422dabe86432e1b2fdca8cf6094223960a.png" src="_images/3531b71d734283aa1b8fe1292b44d4422dabe86432e1b2fdca8cf6094223960a.png" />
-<img alt="_images/8b659c0fc9595c8a29208049b226a1b53be1ebf0de5ae81908b7465c610b9503.png" src="_images/8b659c0fc9595c8a29208049b226a1b53be1ebf0de5ae81908b7465c610b9503.png" />
-<img alt="_images/06f0981e677d9aad91047c40b20a5e410e93b1cdf12416ef6c748c795b6292c1.png" src="_images/06f0981e677d9aad91047c40b20a5e410e93b1cdf12416ef6c748c795b6292c1.png" />
-<img alt="_images/52f55a3f4d2547e3f0a103b751fddf19b2800ad762d4cfd4210969e705e7b2a9.png" src="_images/52f55a3f4d2547e3f0a103b751fddf19b2800ad762d4cfd4210969e705e7b2a9.png" />
-<img alt="_images/705de57f1e92b4be6a01e071b7977011763819118dbdc5cbdec9af51c8f1da27.png" src="_images/705de57f1e92b4be6a01e071b7977011763819118dbdc5cbdec9af51c8f1da27.png" />
-<img alt="_images/bc644b892500939c13c19af1adbe5488103d71fea662adfed90256de7bfa27b8.png" src="_images/bc644b892500939c13c19af1adbe5488103d71fea662adfed90256de7bfa27b8.png" />
-<img alt="_images/098a93388239398c81cd9a9ee5fccd32740fd6175f9ad92549696fe78dea6ba6.png" src="_images/098a93388239398c81cd9a9ee5fccd32740fd6175f9ad92549696fe78dea6ba6.png" />
-<img alt="_images/c3d1ac206c780d419620798af2f0d112896c4631a41f3b031bd95358b548292f.png" src="_images/c3d1ac206c780d419620798af2f0d112896c4631a41f3b031bd95358b548292f.png" />
-<img alt="_images/0f986ab6a1247d5af879675c3c68ab14aecf88bb09675acce2eff14ec5595a6d.png" src="_images/0f986ab6a1247d5af879675c3c68ab14aecf88bb09675acce2eff14ec5595a6d.png" />
-<img alt="_images/3c3198d8e73acd55e09854914fd6bdd2f7fb66a5b7d6a8db599b4db9307c461c.png" src="_images/3c3198d8e73acd55e09854914fd6bdd2f7fb66a5b7d6a8db599b4db9307c461c.png" />
-<img alt="_images/e1f8f31a56aaac060537dfaa0be2dfa82c5bb30407678d5b4a835f15139bb740.png" src="_images/e1f8f31a56aaac060537dfaa0be2dfa82c5bb30407678d5b4a835f15139bb740.png" />
-<img alt="_images/6da98bac9b10e546d6bd700dcb05839de9dce9540880f74e4697e762e140d67e.png" src="_images/6da98bac9b10e546d6bd700dcb05839de9dce9540880f74e4697e762e140d67e.png" />
-<img alt="_images/c24a34a1dcf6325122b83f7a205d1cc3c04505b23e86f0051fb3bc6e16039a9b.png" src="_images/c24a34a1dcf6325122b83f7a205d1cc3c04505b23e86f0051fb3bc6e16039a9b.png" />
-<img alt="_images/2c62916ed501cdbd419b1b6be157cd3a21d0d126210f5b879dba06bd643283db.png" src="_images/2c62916ed501cdbd419b1b6be157cd3a21d0d126210f5b879dba06bd643283db.png" />
-<img alt="_images/cd30d15dbabb97ee94b6eceb5cc6200253d05348ae78c4c0e9426ce013fa5186.png" src="_images/cd30d15dbabb97ee94b6eceb5cc6200253d05348ae78c4c0e9426ce013fa5186.png" />
+<img alt="_images/0c0bba5270d87e3f5d6fe788dfc619e79349516dc9be6b8c4cc7ea646409c63d.png" src="_images/0c0bba5270d87e3f5d6fe788dfc619e79349516dc9be6b8c4cc7ea646409c63d.png" />
+<img alt="_images/9acc9feb59b4a2b82c57a4e08582d176d0788a89a728aad53f45c5df4bc5250f.png" src="_images/9acc9feb59b4a2b82c57a4e08582d176d0788a89a728aad53f45c5df4bc5250f.png" />
+<img alt="_images/a0efb7839208addc323ff8a1222e16285f6d903dfacd3c6abb1b403e60f42006.png" src="_images/a0efb7839208addc323ff8a1222e16285f6d903dfacd3c6abb1b403e60f42006.png" />
+<img alt="_images/ecf79a81af1660f05d2f34b0f7cf25833a23c62e9d5ae974ce5df5a7d4ad59f5.png" src="_images/ecf79a81af1660f05d2f34b0f7cf25833a23c62e9d5ae974ce5df5a7d4ad59f5.png" />
+<img alt="_images/e4b0e6428fa76fe9c488e0bbfedce82f2d12c9ed1835c079e771371d126bdd24.png" src="_images/e4b0e6428fa76fe9c488e0bbfedce82f2d12c9ed1835c079e771371d126bdd24.png" />
+<img alt="_images/6851ad87c6ba608a2b8ef1d17413c5c2db50c50834e340ad69d1b953ea7eda3f.png" src="_images/6851ad87c6ba608a2b8ef1d17413c5c2db50c50834e340ad69d1b953ea7eda3f.png" />
+<img alt="_images/9cca521956ec4219c8532700f65bc32d2867561d4167c3054f3eb7437f63b278.png" src="_images/9cca521956ec4219c8532700f65bc32d2867561d4167c3054f3eb7437f63b278.png" />
+<img alt="_images/6c8d73dc062c6232d7ac4f0a92939ec2b970c89a8695713b7adef0b58ba222e7.png" src="_images/6c8d73dc062c6232d7ac4f0a92939ec2b970c89a8695713b7adef0b58ba222e7.png" />
+<img alt="_images/9a76a0f29beb5dc088bb3e581a6a6eaae1e722dadbecac75d2d4afbfbdeb3b1b.png" src="_images/9a76a0f29beb5dc088bb3e581a6a6eaae1e722dadbecac75d2d4afbfbdeb3b1b.png" />
+<img alt="_images/a6213512795baa09a96e05cfe8d05613edf3713272cccff6786e277bc3e32edc.png" src="_images/a6213512795baa09a96e05cfe8d05613edf3713272cccff6786e277bc3e32edc.png" />
+<img alt="_images/4fe5b844a3d752b0502c6e362f1c5d56f26ce4de32de3f3848d6541aaf0655dd.png" src="_images/4fe5b844a3d752b0502c6e362f1c5d56f26ce4de32de3f3848d6541aaf0655dd.png" />
+<img alt="_images/762213640ad81e69ab7da1e4737e3b23262de91aeee6652d8b4671721d14cb83.png" src="_images/762213640ad81e69ab7da1e4737e3b23262de91aeee6652d8b4671721d14cb83.png" />
+<img alt="_images/9ef9df806cbb07b6ca8cd135d78f9ffb3fdcdcbffd95c2715159cb9777902962.png" src="_images/9ef9df806cbb07b6ca8cd135d78f9ffb3fdcdcbffd95c2715159cb9777902962.png" />
+<img alt="_images/bc1e36c31cefaffa94ad31d3ceca2d4e6b17b1e50daaa349f770280ce9d33e58.png" src="_images/bc1e36c31cefaffa94ad31d3ceca2d4e6b17b1e50daaa349f770280ce9d33e58.png" />
+<img alt="_images/db58a010838b045bd38049852d7e2eb971097d5dfefda2210e61f7d63fb9df0f.png" src="_images/db58a010838b045bd38049852d7e2eb971097d5dfefda2210e61f7d63fb9df0f.png" />
+<img alt="_images/ae1822f9f58cd5e704b37f919e17013600430b53d9388eb74002c4dead738e3b.png" src="_images/ae1822f9f58cd5e704b37f919e17013600430b53d9388eb74002c4dead738e3b.png" />
+<img alt="_images/ffb2f17e36e014c35065678e93860378047986765546bc9681466e9a5b176b85.png" src="_images/ffb2f17e36e014c35065678e93860378047986765546bc9681466e9a5b176b85.png" />
+<img alt="_images/4dff471cdd49d299318c54e1db252f80cbdb47cfe68b748a3fe98a48a98154c3.png" src="_images/4dff471cdd49d299318c54e1db252f80cbdb47cfe68b748a3fe98a48a98154c3.png" />
+<img alt="_images/ad84381cd15840408b9b685b568d88c9aaec89c72b5ad2bc607a2460dce220bc.png" src="_images/ad84381cd15840408b9b685b568d88c9aaec89c72b5ad2bc607a2460dce220bc.png" />
+<img alt="_images/13497acd327d904979c65f4630ee70ac6875d066313ea871c7eedaca24086dfa.png" src="_images/13497acd327d904979c65f4630ee70ac6875d066313ea871c7eedaca24086dfa.png" />
+<img alt="_images/73022a00d5e4328c2dcdf0757c80151186fb93ccafbf3d03469338a6bf6d0c0a.png" src="_images/73022a00d5e4328c2dcdf0757c80151186fb93ccafbf3d03469338a6bf6d0c0a.png" />
+<img alt="_images/d8ba882bb8b6a86ed853a203d11485df5a70bd41dfc7741ae411734f9f976aea.png" src="_images/d8ba882bb8b6a86ed853a203d11485df5a70bd41dfc7741ae411734f9f976aea.png" />
+<img alt="_images/419995aa741a40d346369f5413eac8c1b05584ff596ee0dfe491c4eacadc2645.png" src="_images/419995aa741a40d346369f5413eac8c1b05584ff596ee0dfe491c4eacadc2645.png" />
+<img alt="_images/fdbf5a0a136a495a2f3e58e7493c1ded3b0683da6d7a76a63268ca5862161656.png" src="_images/fdbf5a0a136a495a2f3e58e7493c1ded3b0683da6d7a76a63268ca5862161656.png" />
+<img alt="_images/0e55cfd70d6a73d55761a32dba7f7a64ad189127395d3147eff5752c41e46ba3.png" src="_images/0e55cfd70d6a73d55761a32dba7f7a64ad189127395d3147eff5752c41e46ba3.png" />
+<img alt="_images/72dd22863f77d7936f9ec2f304cad62d4182fd491955c31706698f8617c08b48.png" src="_images/72dd22863f77d7936f9ec2f304cad62d4182fd491955c31706698f8617c08b48.png" />
+<img alt="_images/b283702c6917eb3731659b4a0b477a91c327396ce7941e4743ac4e2f91f14d94.png" src="_images/b283702c6917eb3731659b4a0b477a91c327396ce7941e4743ac4e2f91f14d94.png" />
+<img alt="_images/670be0e9dde69a6d2d4ba0e5493bf016fd51b0e52a59c641510ac94b4a096486.png" src="_images/670be0e9dde69a6d2d4ba0e5493bf016fd51b0e52a59c641510ac94b4a096486.png" />
+<img alt="_images/75c29907fca4d03fa107882c67f3c0e6b40d73144442bebc01fdb35b7ab0798a.png" src="_images/75c29907fca4d03fa107882c67f3c0e6b40d73144442bebc01fdb35b7ab0798a.png" />
+<img alt="_images/5f81552c9d5f39f3cb3c45c3130990a5a0346ac0addb4b1bf3152edb05df66ac.png" src="_images/5f81552c9d5f39f3cb3c45c3130990a5a0346ac0addb4b1bf3152edb05df66ac.png" />
+<img alt="_images/1330e8796dcb2efd52d3f237fc6c642f44b26fcce6d0810d291fc9b08126e9c1.png" src="_images/1330e8796dcb2efd52d3f237fc6c642f44b26fcce6d0810d291fc9b08126e9c1.png" />
+<img alt="_images/eb4fed6b92a01de5a3658c68ae89041912c9621e5b9bacd7438fd54b40d8b8d1.png" src="_images/eb4fed6b92a01de5a3658c68ae89041912c9621e5b9bacd7438fd54b40d8b8d1.png" />
+<img alt="_images/5ac95252f401e9134b0440b5e91616f3c1b5e27ba9b85b2cbf7cd50047e8be30.png" src="_images/5ac95252f401e9134b0440b5e91616f3c1b5e27ba9b85b2cbf7cd50047e8be30.png" />
+<img alt="_images/087b8a18fc1c64272e64cf03bcd4a095eb7570158f40f80d7bc9a205e1937854.png" src="_images/087b8a18fc1c64272e64cf03bcd4a095eb7570158f40f80d7bc9a205e1937854.png" />
+<img alt="_images/9b22806afdc31becfd6ae79177b9fd79b35a7c2b5aa728e195694640f6f442ce.png" src="_images/9b22806afdc31becfd6ae79177b9fd79b35a7c2b5aa728e195694640f6f442ce.png" />
+<img alt="_images/dda2cf28350d0e222c86544ee64b391868cc0bd51d1c84bcf1e90a2992fc8db2.png" src="_images/dda2cf28350d0e222c86544ee64b391868cc0bd51d1c84bcf1e90a2992fc8db2.png" />
+<img alt="_images/89dc3b633d994c30a81e6984d17cd98080d2e5ff00f22e5d68aa0b6030afe525.png" src="_images/89dc3b633d994c30a81e6984d17cd98080d2e5ff00f22e5d68aa0b6030afe525.png" />
+<img alt="_images/6a7b60fa18f206ce6999e94fb01f4aae822afd58c663773ff0755f92d5bc2371.png" src="_images/6a7b60fa18f206ce6999e94fb01f4aae822afd58c663773ff0755f92d5bc2371.png" />
+<img alt="_images/ae22300cdd05f88dd66b268be37b7879a420bf97a9e1e41e28d15018d1f7b6d5.png" src="_images/ae22300cdd05f88dd66b268be37b7879a420bf97a9e1e41e28d15018d1f7b6d5.png" />
+<img alt="_images/eda04c6aec1165f09f14c692d1ec07538853707a062054c856927204f314508e.png" src="_images/eda04c6aec1165f09f14c692d1ec07538853707a062054c856927204f314508e.png" />
+<img alt="_images/2fae2ad96ef9df57e78dedbaf46469793f9f56bf29c09be41b02c209342d5d56.png" src="_images/2fae2ad96ef9df57e78dedbaf46469793f9f56bf29c09be41b02c209342d5d56.png" />
+<img alt="_images/f8cdd0d717c8b130a7e8f37aa6c09c95b7bb2aa3ea1d35e026735aca41138769.png" src="_images/f8cdd0d717c8b130a7e8f37aa6c09c95b7bb2aa3ea1d35e026735aca41138769.png" />
+<img alt="_images/c3f4767b26de97aa02c7e04f18ccc7c6fe3a3fd3094fcfe69e2ffa520d95a2d9.png" src="_images/c3f4767b26de97aa02c7e04f18ccc7c6fe3a3fd3094fcfe69e2ffa520d95a2d9.png" />
+<img alt="_images/5cc527bce5a1a8e7590c7d5b6683c57643c03cf4c9c3356d22ecdc39ad09a66d.png" src="_images/5cc527bce5a1a8e7590c7d5b6683c57643c03cf4c9c3356d22ecdc39ad09a66d.png" />
+<img alt="_images/2d08054f8420d14b9bff378709697cdfcd488e0b7c4095106d80cca508b5bd31.png" src="_images/2d08054f8420d14b9bff378709697cdfcd488e0b7c4095106d80cca508b5bd31.png" />
+<img alt="_images/c3320d4e9d900ba6c48301a62cbb1cf95af150d97dab5c3e01a8fb54e1e6a38c.png" src="_images/c3320d4e9d900ba6c48301a62cbb1cf95af150d97dab5c3e01a8fb54e1e6a38c.png" />
+<img alt="_images/98a3c42f2b49e313dd4ee322ee933ddf340aabc8974b1ec4ef97ee1acc0b1f19.png" src="_images/98a3c42f2b49e313dd4ee322ee933ddf340aabc8974b1ec4ef97ee1acc0b1f19.png" />
+<img alt="_images/b5ac84e31efcad8b10130189a0d79e99ffde7c17271146ba53ec3a9494669339.png" src="_images/b5ac84e31efcad8b10130189a0d79e99ffde7c17271146ba53ec3a9494669339.png" />
+<img alt="_images/968cf1d105bef0b9394c79a473be83759e24d0168ce76587887bf42d267d3f00.png" src="_images/968cf1d105bef0b9394c79a473be83759e24d0168ce76587887bf42d267d3f00.png" />
+<img alt="_images/003717fbe3df9debc213cd3cd50b2a93b208b4f7be6422d75df5d58d5b0bcee0.png" src="_images/003717fbe3df9debc213cd3cd50b2a93b208b4f7be6422d75df5d58d5b0bcee0.png" />
+<img alt="_images/7090ab7970b4ae83692603dcfc8e4d8fc09916d3d5707b1d0c9283608e12fbfc.png" src="_images/7090ab7970b4ae83692603dcfc8e4d8fc09916d3d5707b1d0c9283608e12fbfc.png" />
+<img alt="_images/8e4b585eab97efbb611e11a6475f613df72a0ba7341623015fb8e406e4c5b9bb.png" src="_images/8e4b585eab97efbb611e11a6475f613df72a0ba7341623015fb8e406e4c5b9bb.png" />
+<img alt="_images/6893d136b01402394fceb2fe3e4d8362570d9ece6cee20578a031d594dcb40bb.png" src="_images/6893d136b01402394fceb2fe3e4d8362570d9ece6cee20578a031d594dcb40bb.png" />
+<img alt="_images/0863d864050a31f1435a26c6437e0a3716023783956201d8afb9f325c9ffd830.png" src="_images/0863d864050a31f1435a26c6437e0a3716023783956201d8afb9f325c9ffd830.png" />
+<img alt="_images/56058a28a43a80ade60881c227393a02d8caafd2982e0ee5e7ffc196932735c5.png" src="_images/56058a28a43a80ade60881c227393a02d8caafd2982e0ee5e7ffc196932735c5.png" />
+<img alt="_images/640eb26b9d83cf59a562e6c72f07af86cf0d00e0f32cc8a91907da48bd7d229e.png" src="_images/640eb26b9d83cf59a562e6c72f07af86cf0d00e0f32cc8a91907da48bd7d229e.png" />
+<img alt="_images/682e9dfa9133668f130396ed3445b91ebb92d23e78cc1ca3d82f3d005a02cb50.png" src="_images/682e9dfa9133668f130396ed3445b91ebb92d23e78cc1ca3d82f3d005a02cb50.png" />
+<img alt="_images/c1359fb11a8ddc70039f0e369c0972b41fd6daa1fd317055b1392509b03834c0.png" src="_images/c1359fb11a8ddc70039f0e369c0972b41fd6daa1fd317055b1392509b03834c0.png" />
+<img alt="_images/3418da2682b5e9588571e28115aba56c8f922e9c75b1dd779b170d5c0299fff5.png" src="_images/3418da2682b5e9588571e28115aba56c8f922e9c75b1dd779b170d5c0299fff5.png" />
+<img alt="_images/1ef5908c9b0af8c2fb908e892c894468cc15c4906f6be793aa4e0bf840761212.png" src="_images/1ef5908c9b0af8c2fb908e892c894468cc15c4906f6be793aa4e0bf840761212.png" />
+<img alt="_images/5af93cf569195f03dd0e9b936463df3c14ac886a4c28e16efa50725b70490d61.png" src="_images/5af93cf569195f03dd0e9b936463df3c14ac886a4c28e16efa50725b70490d61.png" />
+<img alt="_images/fd3fe259b162f1f15bb4bb1c1f094c25008525e0ad7bc2b8c220228955a8191b.png" src="_images/fd3fe259b162f1f15bb4bb1c1f094c25008525e0ad7bc2b8c220228955a8191b.png" />
+<img alt="_images/5a87b4d202de99e256df71901f5454c2c3fb53ca74615170aa20992d5ae26bf5.png" src="_images/5a87b4d202de99e256df71901f5454c2c3fb53ca74615170aa20992d5ae26bf5.png" />
+<img alt="_images/84d6bdf40ed18c79f55dda197c22c4b34d05d9c0a7dba4316064a88a892585e4.png" src="_images/84d6bdf40ed18c79f55dda197c22c4b34d05d9c0a7dba4316064a88a892585e4.png" />
+<img alt="_images/53bb2c2e447a4f8cb8a6a8bb0a83b950ab9e7a9231667864f8bad6c8e3552d3f.png" src="_images/53bb2c2e447a4f8cb8a6a8bb0a83b950ab9e7a9231667864f8bad6c8e3552d3f.png" />
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;Figure size 640x480 with 2 Axes&gt;,
  &lt;Figure size 640x480 with 2 Axes&gt;,
  &lt;Figure size 640x480 with 2 Axes&gt;,
@@ -1399,8 +1628,9 @@ combining channels using &quot;mean&quot;
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Analysing data with Python and MNE</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#about-mne">About MNE</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#about-this-tutorial">About this tutorial</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#importing">Importing</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-paths">Creating paths</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-the-data">Loading the data</a></li>
 </ul>
 </li>

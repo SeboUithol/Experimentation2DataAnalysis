@@ -17,21 +17,53 @@ Traceback (most recent call last):
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
-import mne
-import matplotlib
-import pandas as pd
-import numpy as np
-
+raw_eeg = raw_eeg.resample(sfreq=250)
 ------------------
 
 [0;31m---------------------------------------------------------------------------[0m
-[0;31mModuleNotFoundError[0m                       Traceback (most recent call last)
-[0;32m/var/folders/ym/sgmmtl6j62gdmqhqjzgb95_00000gn/T/ipykernel_26552/3397533586.py[0m in [0;36m<module>[0;34m[0m
-[0;32m----> 1[0;31m [0;32mimport[0m [0mmne[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m      2[0m [0;32mimport[0m [0mmatplotlib[0m[0;34m[0m[0;34m[0m[0m
-[1;32m      3[0m [0;32mimport[0m [0mpandas[0m [0;32mas[0m [0mpd[0m[0;34m[0m[0;34m[0m[0m
-[1;32m      4[0m [0;32mimport[0m [0mnumpy[0m [0;32mas[0m [0mnp[0m[0;34m[0m[0;34m[0m[0m
+[0;31mKeyboardInterrupt[0m                         Traceback (most recent call last)
+[0;32m/var/folders/ym/sgmmtl6j62gdmqhqjzgb95_00000gn/T/ipykernel_56203/689995176.py[0m in [0;36m<module>[0;34m[0m
+[0;32m----> 1[0;31m [0mraw_eeg[0m [0;34m=[0m [0mraw_eeg[0m[0;34m.[0m[0mresample[0m[0;34m([0m[0msfreq[0m[0;34m=[0m[0;36m250[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m
+[0;32m<decorator-gen-239>[0m in [0;36mresample[0;34m(self, sfreq, npad, window, stim_picks, n_jobs, events, pad, verbose)[0m
 
-[0;31mModuleNotFoundError[0m: No module named 'mne'
-ModuleNotFoundError: No module named 'mne'
+[0;32m~/opt/anaconda3/lib/python3.9/site-packages/mne/io/base.py[0m in [0;36mresample[0;34m(self, sfreq, npad, window, stim_picks, n_jobs, events, pad, verbose)[0m
+[1;32m   1360[0m             [0;32mif[0m [0mself[0m[0;34m.[0m[0mpreload[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[1;32m   1361[0m                 [0mdata_chunk[0m [0;34m=[0m [0mself[0m[0;34m.[0m[0m_data[0m[0;34m[[0m[0;34m:[0m[0;34m,[0m [0moffsets[0m[0;34m[[0m[0mri[0m[0;34m][0m [0;34m:[0m [0moffsets[0m[0;34m[[0m[0mri[0m [0;34m+[0m [0;36m1[0m[0;34m][0m[0;34m][0m[0;34m[0m[0;34m[0m[0m
+[0;32m-> 1362[0;31m                 [0mnew_data[0m[0;34m[[0m[0;34m:[0m[0;34m,[0m [0mthis_sl[0m[0;34m][0m [0;34m=[0m [0mresample[0m[0;34m([0m[0mdata_chunk[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m   1363[0m                 [0;31m# In empirical testing, it was faster to resample all channels[0m[0;34m[0m[0;34m[0m[0m
+[1;32m   1364[0m                 [0;31m# (above) and then replace the stim channels than it was to[0m[0;34m[0m[0;34m[0m[0m
+
+[0;32m<decorator-gen-154>[0m in [0;36mresample[0;34m(x, up, down, npad, axis, window, n_jobs, pad, verbose)[0m
+
+[0;32m~/opt/anaconda3/lib/python3.9/site-packages/mne/filter.py[0m in [0;36mresample[0;34m(***failed resolving arguments***)[0m
+[1;32m   2027[0m         [0my[0m [0;34m=[0m [0mnp[0m[0;34m.[0m[0mzeros[0m[0;34m([0m[0;34m([0m[0mlen[0m[0;34m([0m[0mx_flat[0m[0;34m)[0m[0;34m,[0m [0mnew_len[0m [0;34m-[0m [0mto_removes[0m[0;34m.[0m[0msum[0m[0;34m([0m[0;34m)[0m[0;34m)[0m[0;34m,[0m [0mdtype[0m[0;34m=[0m[0mx[0m[0;34m.[0m[0mdtype[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m   2028[0m         [0;32mfor[0m [0mxi[0m[0;34m,[0m [0mx_[0m [0;32min[0m [0menumerate[0m[0;34m([0m[0mx_flat[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0;32m-> 2029[0;31m             [0my[0m[0;34m[[0m[0mxi[0m[0;34m][0m [0;34m=[0m [0m_fft_resample[0m[0;34m([0m[0mx_[0m[0;34m,[0m [0mnew_len[0m[0;34m,[0m [0mnpads[0m[0;34m,[0m [0mto_removes[0m[0;34m,[0m [0mcuda_dict[0m[0;34m,[0m [0mpad[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m   2030[0m     [0;32melse[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[1;32m   2031[0m         y = parallel(
+
+[0;32m~/opt/anaconda3/lib/python3.9/site-packages/mne/cuda.py[0m in [0;36m_fft_resample[0;34m(x, new_len, npads, to_removes, cuda_dict, pad)[0m
+[1;32m    352[0m     [0mshorter[0m [0;34m=[0m [0mnew_len[0m [0;34m<[0m [0mold_len[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    353[0m     [0muse_len[0m [0;34m=[0m [0mnew_len[0m [0;32mif[0m [0mshorter[0m [0;32melse[0m [0mold_len[0m[0;34m[0m[0;34m[0m[0m
+[0;32m--> 354[0;31m     [0mx_fft[0m [0;34m=[0m [0mcuda_dict[0m[0;34m[[0m[0;34m"rfft"[0m[0;34m][0m[0;34m([0m[0mx[0m[0;34m,[0m [0;32mNone[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m    355[0m     [0;32mif[0m [0muse_len[0m [0;34m%[0m [0;36m2[0m [0;34m==[0m [0;36m0[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    356[0m         [0mnyq[0m [0;34m=[0m [0muse_len[0m [0;34m//[0m [0;36m2[0m[0;34m[0m[0;34m[0m[0m
+
+[0;32m~/opt/anaconda3/lib/python3.9/site-packages/scipy/fft/_backend.py[0m in [0;36m__ua_function__[0;34m(method, args, kwargs)[0m
+[1;32m     23[0m         [0;32mif[0m [0mfn[0m [0;32mis[0m [0;32mNone[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[1;32m     24[0m             [0;32mreturn[0m [0mNotImplemented[0m[0;34m[0m[0;34m[0m[0m
+[0;32m---> 25[0;31m         [0;32mreturn[0m [0mfn[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m     26[0m [0;34m[0m[0m
+[1;32m     27[0m [0;34m[0m[0m
+
+[0;32m~/opt/anaconda3/lib/python3.9/site-packages/scipy/fft/_pocketfft/basic.py[0m in [0;36mr2c[0;34m(forward, x, n, axis, norm, overwrite_x, workers, plan)[0m
+[1;32m     60[0m [0;34m[0m[0m
+[1;32m     61[0m     [0;31m# Note: overwrite_x is not utilised[0m[0;34m[0m[0;34m[0m[0m
+[0;32m---> 62[0;31m     [0;32mreturn[0m [0mpfft[0m[0;34m.[0m[0mr2c[0m[0;34m([0m[0mtmp[0m[0;34m,[0m [0;34m([0m[0maxis[0m[0;34m,[0m[0;34m)[0m[0;34m,[0m [0mforward[0m[0;34m,[0m [0mnorm[0m[0;34m,[0m [0;32mNone[0m[0;34m,[0m [0mworkers[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m     63[0m [0;34m[0m[0m
+[1;32m     64[0m [0;34m[0m[0m
+
+[0;31mKeyboardInterrupt[0m: 
+KeyboardInterrupt: 
 
