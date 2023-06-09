@@ -24,7 +24,7 @@ raw_eeg = mne.io.read_raw_bdf(filename, preload=True)
 
 [0;31m---------------------------------------------------------------------------[0m
 [0;31mFileNotFoundError[0m                         Traceback (most recent call last)
-[0;32m/var/folders/ym/sgmmtl6j62gdmqhqjzgb95_00000gn/T/ipykernel_57289/83885273.py[0m in [0;36m<module>[0;34m[0m
+[0;32m/var/folders/ym/sgmmtl6j62gdmqhqjzgb95_00000gn/T/ipykernel_79302/83885273.py[0m in [0;36m<module>[0;34m[0m
 [1;32m      1[0m [0mfilename[0m [0;34m=[0m [0;34m"Flanker_EEG_52_12052022.bdf"[0m[0;34m[0m[0;34m[0m[0m
 [1;32m      2[0m [0;34m[0m[0m
 [0;32m----> 3[0;31m [0mraw_eeg[0m [0;34m=[0m [0mmne[0m[0;34m.[0m[0mio[0m[0;34m.[0m[0mread_raw_bdf[0m[0;34m([0m[0mfilename[0m[0;34m,[0m [0mpreload[0m[0;34m=[0m[0;32mTrue[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
