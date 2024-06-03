@@ -455,37 +455,54 @@ document.write(`
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="o">%</span><span class="k">pip</span> install mne
 <span class="kn">import</span> <span class="nn">mne</span>
+<span class="o">%</span><span class="k">pip</span> install python-picard
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: mne in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (1.4.2)
+Requirement already satisfied: decorator in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from mne) (5.1.1)
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: decorator in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from mne) (5.1.1)
-Requirement already satisfied: scipy&gt;=1.6.3 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from mne) (1.9.1)
-Requirement already satisfied: tqdm in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from mne) (4.64.1)
-Requirement already satisfied: pooch&gt;=1.5 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from mne) (1.7.0)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: pooch&gt;=1.5 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from mne) (1.7.0)
+Requirement already satisfied: packaging in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from mne) (21.3)
 Requirement already satisfied: jinja2 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from mne) (2.11.3)
 Requirement already satisfied: matplotlib&gt;=3.4.0 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from mne) (3.5.2)
+Requirement already satisfied: tqdm in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from mne) (4.64.1)
 Requirement already satisfied: numpy&gt;=1.15.4 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from mne) (1.21.5)
-Requirement already satisfied: packaging in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from mne) (21.3)
-Requirement already satisfied: kiwisolver&gt;=1.0.1 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from matplotlib&gt;=3.4.0-&gt;mne) (1.4.2)
-Requirement already satisfied: cycler&gt;=0.10 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from matplotlib&gt;=3.4.0-&gt;mne) (0.11.0)
-Requirement already satisfied: fonttools&gt;=4.22.0 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from matplotlib&gt;=3.4.0-&gt;mne) (4.25.0)
-Requirement already satisfied: pyparsing&gt;=2.2.1 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from matplotlib&gt;=3.4.0-&gt;mne) (3.0.9)
+Requirement already satisfied: scipy&gt;=1.6.3 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from mne) (1.9.1)
 Requirement already satisfied: pillow&gt;=6.2.0 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from matplotlib&gt;=3.4.0-&gt;mne) (9.2.0)
+Requirement already satisfied: pyparsing&gt;=2.2.1 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from matplotlib&gt;=3.4.0-&gt;mne) (3.0.9)
 Requirement already satisfied: python-dateutil&gt;=2.7 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from matplotlib&gt;=3.4.0-&gt;mne) (2.8.2)
-Requirement already satisfied: requests&gt;=2.19.0 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from pooch&gt;=1.5-&gt;mne) (2.28.1)
+Requirement already satisfied: fonttools&gt;=4.22.0 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from matplotlib&gt;=3.4.0-&gt;mne) (4.25.0)
+Requirement already satisfied: cycler&gt;=0.10 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from matplotlib&gt;=3.4.0-&gt;mne) (0.11.0)
+Requirement already satisfied: kiwisolver&gt;=1.0.1 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from matplotlib&gt;=3.4.0-&gt;mne) (1.4.2)
 Requirement already satisfied: platformdirs&gt;=2.5.0 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from pooch&gt;=1.5-&gt;mne) (2.5.2)
+Requirement already satisfied: requests&gt;=2.19.0 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from pooch&gt;=1.5-&gt;mne) (2.28.1)
 Requirement already satisfied: MarkupSafe&gt;=0.23 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from jinja2-&gt;mne) (2.0.1)
 Requirement already satisfied: six&gt;=1.5 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from python-dateutil&gt;=2.7-&gt;matplotlib&gt;=3.4.0-&gt;mne) (1.16.0)
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: urllib3&lt;1.27,&gt;=1.21.1 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from requests&gt;=2.19.0-&gt;pooch&gt;=1.5-&gt;mne) (1.26.11)
-Requirement already satisfied: certifi&gt;=2017.4.17 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from requests&gt;=2.19.0-&gt;pooch&gt;=1.5-&gt;mne) (2022.9.24)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: certifi&gt;=2017.4.17 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from requests&gt;=2.19.0-&gt;pooch&gt;=1.5-&gt;mne) (2022.9.24)
+Requirement already satisfied: urllib3&lt;1.27,&gt;=1.21.1 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from requests&gt;=2.19.0-&gt;pooch&gt;=1.5-&gt;mne) (1.26.11)
 Requirement already satisfied: charset-normalizer&lt;3,&gt;=2 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from requests&gt;=2.19.0-&gt;pooch&gt;=1.5-&gt;mne) (2.0.4)
 Requirement already satisfied: idna&lt;4,&gt;=2.5 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from requests&gt;=2.19.0-&gt;pooch&gt;=1.5-&gt;mne) (3.3)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Note: you may need to restart the kernel to use updated packages.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: python-picard in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (0.7)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: numpy in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from python-picard) (1.21.5)
+Requirement already satisfied: numexpr in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from python-picard) (2.8.3)
+Requirement already satisfied: scipy in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from python-picard) (1.9.1)
+Requirement already satisfied: scikit-learn in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from python-picard) (1.0.2)
+Requirement already satisfied: packaging in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from numexpr-&gt;python-picard) (21.3)
+Requirement already satisfied: threadpoolctl&gt;=2.0.0 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from scikit-learn-&gt;python-picard) (2.2.0)
+Requirement already satisfied: joblib&gt;=0.11 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from scikit-learn-&gt;python-picard) (1.1.0)
+Requirement already satisfied: pyparsing!=3.0.5,&gt;=2.0.2 in /Users/sebouithol/opt/anaconda3/lib/python3.9/site-packages (from packaging-&gt;numexpr-&gt;python-picard) (3.0.9)
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Note: you may need to restart the kernel to use updated packages.
@@ -514,7 +531,7 @@ Requirement already satisfied: idna&lt;4,&gt;=2.5 in /Users/sebouithol/opt/anaco
 </div>
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">FileNotFoundError</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
-<span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">folders</span><span class="o">/</span><span class="n">ym</span><span class="o">/</span><span class="n">sgmmtl6j62gdmqhqjzgb95_00000gn</span><span class="o">/</span><span class="n">T</span><span class="o">/</span><span class="n">ipykernel_79302</span><span class="o">/</span><span class="mf">83885273.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">folders</span><span class="o">/</span><span class="n">ym</span><span class="o">/</span><span class="n">sgmmtl6j62gdmqhqjzgb95_00000gn</span><span class="o">/</span><span class="n">T</span><span class="o">/</span><span class="n">ipykernel_82677</span><span class="o">/</span><span class="mf">83885273.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
 <span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;Flanker_EEG_52_12052022.bdf&quot;</span>
 <span class="g g-Whitespace">      </span><span class="mi">2</span> 
 <span class="ne">----&gt; </span><span class="mi">3</span> <span class="n">raw_eeg</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_bdf</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -635,7 +652,7 @@ The data file itself is little more than the measured potential of a number of e
 </div>
 </div>
 </div>
-<p>Ok, it is clearly data, but it does not vry  look pretty. It still contains various types of noise, and at multiple places the recorded value is too small or large to be displayed in the given range. In different steps we will correct these problems.</p>
+<p>Ok, it is clearly data, but it does not very  look pretty. It still contains various types of noise, and at multiple places the recorded value is too small or large to be displayed in the given range. In different steps we will correct these problems.</p>
 </section>
 <section id="filtering">
 <h2>Filtering<a class="headerlink" href="#filtering" title="Permalink to this heading">#</a></h2>
@@ -688,8 +705,8 @@ Back to EEG data preprocessing: The raw signal is composed of proper brain activ
 </div>
 </div>
 </div>
-<p>For best results we look at both the components and the sources. Note that the sources graph does not display the electrodes, but the different components. The graph indicates how much of the (in our case filtered eeg) signal is explained by each component. What component correlates with eye blinks, you think? Why? What component could correlate to a bad sensor connection? We will remove it from the data.</p>
-<p>Fill in the components number in the brackets below. Mind that the first member in an array in python is referred to as 0 (unlike for instance MatLab, where the first member is 1). Type in the components between the square brackets, separated by a comma</p>
+<p>For best results we look at both the components and the sources. Note that the sources graph does not display the electrodes, but the different components. The graph indicates how much of the (in our case filtered eeg) signal is explained by each component. What component correlates with eye blinks, you think? Why? What component could correlate to a bad sensor connection? Why? We will remove it from the data.</p>
+<p>Fill in the components number in the brackets below. Mind that the first member in an array in python is referred to as 0 (unlike for instance MatLab and R, where the first member is 1). Type in the components between the square brackets, separated by a comma</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ica</span><span class="o">.</span><span class="n">exclude</span> <span class="o">=</span> <span class="p">[]</span>
